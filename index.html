@@ -6,7 +6,7 @@
   <title>WarriorBabe — Sales Ops Command Center</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -14,107 +14,171 @@
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <span class="logo-mark">WB</span>
+    <div class="logo-mark">WB</div>
     <div>
-      <div class="logo-title">WarriorBabe</div>
-      <div class="logo-sub">Sales Ops</div>
+      <div class="logo-title">WARRIOR<span>Babe</span></div>
+      <div class="logo-sub">Sales Operations</div>
     </div>
   </div>
 
   <nav class="sidebar-nav">
-    <div class="nav-group-label">Overview</div>
-    <a class="nav-item active" data-page="home" href="#">🏠 Command Center</a>
-
-    <div class="nav-group-label">Engines</div>
-    <a class="nav-item" data-page="setter" href="#">⚡ Setter Engine</a>
-    <a class="nav-item" data-page="showrate" href="#">📅 Show Rate Engine</a>
-    <a class="nav-item" data-page="closer" href="#">🎯 Closer Engine</a>
-    <a class="nav-item" data-page="global" href="#">🌐 Global Workflows</a>
-
-    <div class="nav-group-label">Reference</div>
-    <a class="nav-item" data-page="quicklinks" href="#">🔗 Quick Links</a>
-    <a class="nav-item" data-page="workflows" href="#">⚙️ All Workflows</a>
-    <a class="nav-item" data-page="properties" href="#">🗂 All Properties</a>
-    <a class="nav-item" data-page="pipelines" href="#">🔀 Pipelines</a>
-    <a class="nav-item" data-page="lists" href="#">📋 Lists & Views</a>
-    <a class="nav-item" data-page="slack" href="#">💬 Slack Channels</a>
-    <a class="nav-item" data-page="integrations" href="#">🔌 Integrations</a>
-    <a class="nav-item" data-page="leadstatus" href="#">🏷 Lead Statuses</a>
+    <div class="nav-section">
+      <div class="nav-group-label">Overview</div>
+      <a class="nav-item active" data-page="home" href="#">
+        <span class="nav-icon">🏠</span><span>Command Center</span>
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-group-label">Engines</div>
+      <a class="nav-item" data-page="setter" href="#">
+        <span class="nav-icon">⚡</span><span>Setter Engine</span>
+      </a>
+      <a class="nav-item" data-page="showrate" href="#">
+        <span class="nav-icon">📅</span><span>Show Rate Engine</span>
+      </a>
+      <a class="nav-item" data-page="closer" href="#">
+        <span class="nav-icon">🎯</span><span>Closer Engine</span>
+      </a>
+      <a class="nav-item" data-page="global" href="#">
+        <span class="nav-icon">🌐</span><span>Global Workflows</span>
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-group-label">Reference</div>
+      <a class="nav-item" data-page="quicklinks" href="#">
+        <span class="nav-icon">🔗</span><span>Quick Links</span>
+      </a>
+      <a class="nav-item" data-page="workflows" href="#">
+        <span class="nav-icon">⚙️</span><span>All Workflows</span>
+      </a>
+      <a class="nav-item" data-page="properties" href="#">
+        <span class="nav-icon">🗂</span><span>All Properties</span>
+      </a>
+      <a class="nav-item" data-page="pipelines" href="#">
+        <span class="nav-icon">🔀</span><span>Pipelines</span>
+      </a>
+      <a class="nav-item" data-page="lists" href="#">
+        <span class="nav-icon">📋</span><span>Lists &amp; Views</span>
+      </a>
+      <a class="nav-item" data-page="slack" href="#">
+        <span class="nav-icon">💬</span><span>Slack Channels</span>
+      </a>
+      <a class="nav-item" data-page="integrations" href="#">
+        <span class="nav-icon">🔌</span><span>Integrations</span>
+      </a>
+      <a class="nav-item" data-page="leadstatus" href="#">
+        <span class="nav-icon">🏷</span><span>Lead Statuses</span>
+      </a>
+    </div>
   </nav>
 
   <div class="sidebar-footer">
+    <div class="sidebar-footer-dot"></div>
     <div class="sidebar-footer-text">Last updated Mar 2026</div>
   </div>
 </aside>
 
 <!-- HAMBURGER -->
-<button class="hamburger" id="hamburger">☰</button>
+<button class="hamburger" id="hamburger">
+  <span></span><span></span><span></span>
+</button>
 
 <!-- MAIN CONTENT -->
 <main class="main-content">
 
-  <!-- HOME PAGE -->
+  <!-- ══════════════════════ HOME ══════════════════════ -->
   <div class="page active" id="page-home">
     <div class="page-hero">
-      <div class="page-hero-inner">
-        <div class="hero-tag">Sales Operations</div>
-        <h1 class="hero-title">Command Center</h1>
-        <p class="hero-sub">Your complete reference for every workflow, property, pipeline, and integration powering the WarriorBabe sales machine.</p>
-      </div>
+      <div class="hero-eyebrow">Sales Operations · Internal Reference</div>
+      <h1 class="hero-title">COMMAND<br><em>CENTER</em></h1>
+      <p class="hero-sub">Your complete reference for every workflow, property, pipeline, and integration powering the WarriorBabe sales machine.</p>
     </div>
 
     <div class="content-wrap">
       <div class="callout callout-info">
-        <strong>📖 How to Use This Doc:</strong> Use the left sidebar to navigate. <strong>Non-technical team members</strong> — focus on the Engine pages (Setter, Show Rate, Closer) for plain-language explanations. <strong>Technical team</strong> — use All Workflows, All Properties, and Integrations for full detail including IDs and node-level breakdowns.
+        <span class="callout-icon">📖</span>
+        <div><strong>How to Use This Doc:</strong> Use the left sidebar to navigate. <strong>Non-technical team members</strong> — focus on the Engine pages (Setter, Show Rate, Closer) for plain-language explanations. <strong>Technical team</strong> — use All Workflows, All Properties, and Integrations for full detail including IDs and node-level breakdowns.</div>
       </div>
 
-      <h2 class="section-title">The Three Engines</h2>
+      <div class="section-header">
+        <h2 class="section-title">THE THREE <span>ENGINES</span></h2>
+        <p class="section-sub">Each engine handles a distinct phase of the sales process.</p>
+      </div>
       <div class="engine-grid">
         <div class="engine-card" data-page="setter">
-          <div class="engine-icon">⚡</div>
+          <div class="engine-card-top">
+            <div class="engine-icon">⚡</div>
+            <div class="engine-badge setter-badge">14 Workflows</div>
+          </div>
           <div class="engine-name">Setter Engine</div>
           <div class="engine-desc">Manages lead intake, delegation, Speed to Lead tracking, call activity, and Smart View priority queues. Everything from opt-in to booked appointment.</div>
-          <div class="engine-meta">14 Workflows · Contact Object</div>
+          <div class="engine-object">Contact Object</div>
+          <div class="engine-cta">Explore Engine →</div>
         </div>
         <div class="engine-card" data-page="showrate">
-          <div class="engine-icon">📅</div>
+          <div class="engine-card-top">
+            <div class="engine-icon">📅</div>
+            <div class="engine-badge showrate-badge">9 Workflows</div>
+          </div>
           <div class="engine-name">Show Rate Engine</div>
           <div class="engine-desc">Confirmation pipeline, booking advance tracking, pre-call communications, and appointment outcome dispositions for both Setter and Closer calls.</div>
-          <div class="engine-meta">9 Workflows · Appointment Object</div>
+          <div class="engine-object">Appointment Object</div>
+          <div class="engine-cta">Explore Engine →</div>
         </div>
         <div class="engine-card" data-page="closer">
-          <div class="engine-icon">🎯</div>
+          <div class="engine-card-top">
+            <div class="engine-icon">🎯</div>
+            <div class="engine-badge closer-badge">7 Workflows</div>
+          </div>
           <div class="engine-name">Closer Engine</div>
           <div class="engine-desc">Stage automation for the Sales Momentum Pipeline, deal outcomes, Red Zone notifications, Closed Won onboarding, and Calendly integration processing.</div>
-          <div class="engine-meta">7 Workflows · Deal Object</div>
+          <div class="engine-object">Deal Object</div>
+          <div class="engine-cta">Explore Engine →</div>
         </div>
       </div>
 
-      <h2 class="section-title">Global Systems</h2>
+      <div class="section-header" style="margin-top:48px">
+        <h2 class="section-title">GLOBAL <span>SYSTEMS</span></h2>
+        <p class="section-sub">Cross-engine infrastructure that ties everything together.</p>
+      </div>
       <div class="global-grid">
         <div class="global-card" data-page="global">
           <div class="global-card-icon">🧠</div>
-          <div class="global-card-name">Big Brain</div>
-          <div class="global-card-desc">Master booking orchestrator connecting Calendly → HubSpot → Slack → n8n</div>
+          <div class="global-card-body">
+            <div class="global-card-name">Big Brain</div>
+            <div class="global-card-desc">Master booking orchestrator connecting Calendly → HubSpot → Slack → n8n</div>
+          </div>
+          <div class="global-card-arrow">→</div>
         </div>
         <div class="global-card" data-page="integrations">
           <div class="global-card-icon">🔌</div>
-          <div class="global-card-name">Integrations</div>
-          <div class="global-card-desc">Zapier, Calendly, n8n, Aloware, ClearoutPhone, HubSpot Private Apps</div>
+          <div class="global-card-body">
+            <div class="global-card-name">Integrations</div>
+            <div class="global-card-desc">Zapier, Calendly, n8n, Aloware, ClearoutPhone, HubSpot Private Apps</div>
+          </div>
+          <div class="global-card-arrow">→</div>
         </div>
         <div class="global-card" data-page="slack">
           <div class="global-card-icon">💬</div>
-          <div class="global-card-name">Slack Alerts</div>
-          <div class="global-card-desc">5 channels/webhooks — bookings, approvals, red zones, new leads</div>
+          <div class="global-card-body">
+            <div class="global-card-name">Slack Alerts</div>
+            <div class="global-card-desc">5 channels/webhooks — bookings, approvals, red zones, new leads</div>
+          </div>
+          <div class="global-card-arrow">→</div>
         </div>
         <div class="global-card" data-page="pipelines">
           <div class="global-card-icon">🔀</div>
-          <div class="global-card-name">Pipelines</div>
-          <div class="global-card-desc">Sales Momentum Pipeline (13 stages) + Confirmation Pipeline (8 stages)</div>
+          <div class="global-card-body">
+            <div class="global-card-name">Pipelines</div>
+            <div class="global-card-desc">Sales Momentum Pipeline (13 stages) + Confirmation Pipeline (8 stages)</div>
+          </div>
+          <div class="global-card-arrow">→</div>
         </div>
       </div>
 
-      <h2 class="section-title">Quick Stats</h2>
+      <div class="section-header" style="margin-top:48px">
+        <h2 class="section-title">QUICK <span>STATS</span></h2>
+      </div>
       <div class="stats-grid">
         <div class="stat-card"><div class="stat-num">28</div><div class="stat-label">Total Workflows</div></div>
         <div class="stat-card"><div class="stat-num">13</div><div class="stat-label">Deal Pipeline Stages</div></div>
@@ -126,15 +190,19 @@
     </div>
   </div>
 
-  <!-- SETTER ENGINE PAGE -->
+  <!-- ══════════════════════ SETTER ENGINE ══════════════════════ -->
   <div class="page" id="page-setter">
     <div class="page-header">
-      <h1 class="page-title">⚡ Setter Engine</h1>
-      <p class="page-subtitle">Manages everything from the moment a lead opts in to the moment they're booked on a call. Controls Speed to Lead, delegation, call tracking, and Smart View priority queues.</p>
+      <div class="page-header-inner">
+        <div class="page-engine-badge setter-badge-header">⚡ Setter Engine</div>
+        <h1 class="page-title">Setter Engine</h1>
+        <p class="page-subtitle">Manages everything from the moment a lead opts in to the moment they're booked on a call. Controls Speed to Lead, delegation, call tracking, and Smart View priority queues.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div class="callout callout-info">
-        <strong>🙋 For Non-Technical Team:</strong> The Setter Engine is your "traffic control." It decides which leads go to which setter, tracks how fast setters call new leads, and organizes leads into priority lists (P1 → P4). When you dial and log calls in Aloware, this engine counts them automatically.
+        <span class="callout-icon">🙋</span>
+        <div><strong>For Non-Technical Team:</strong> The Setter Engine is your "traffic control." It decides which leads go to which setter, tracks how fast setters call new leads, and organizes leads into priority lists (P1 → P4). When you dial and log calls in Aloware, this engine counts them automatically.</div>
       </div>
 
       <div class="sop-tabs">
@@ -157,7 +225,6 @@
           <div class="flow-step"><span class="flow-num">8</span><div><strong>Application qual</strong> — if lead submits application, investment amount routes them: &lt;$1k = UNQUALIFIED, $1k+ = MQL.</div></div>
           <div class="flow-step"><span class="flow-num">9</span><div><strong>LT purchase</strong> — if lead buys a low-ticket offer, they enter PQL status (highest priority pre-SQL). PQL list triggers priority dialing.</div></div>
         </div>
-
         <h3>Lead Status → Smart View Mapping</h3>
         <div id="lead-status-grid"></div>
       </div>
@@ -175,47 +242,27 @@
       <div class="sop-content" id="tab-setter-smartviews">
         <h3>Smart Views — Daily Dialing Priority Queue</h3>
         <div class="callout callout-warning">
-          <strong>📌 Daily Workflow:</strong> Work P1 first, then P2, then P3, then P4. Never skip to P4 if P1 has leads. Each view auto-hides leads during cooldown (lead_refresh_active = Yes).
+          <span class="callout-icon">📌</span>
+          <div><strong>Daily Workflow:</strong> Work P1 first, then P2, then P3, then P4. Never skip to P4 if P1 has leads. Each view auto-hides leads during cooldown (lead_refresh_active = Yes).</div>
         </div>
-        <div class="smartview-cards">
-          <div class="sv-card sv-p1">
-            <div class="sv-priority">P1</div>
-            <div class="sv-name">New Hot Leads</div>
-            <div class="sv-desc">Fresh opt-ins from today. Lead Status = NEW. Sorted by Lead Score descending. These are the highest priority — call within 30 minutes.</div>
-            <div class="sv-filters"><strong>Filters:</strong> Setter Owner = Me · Lead Status = NEW · Created Today · Lead Refresh Active ≠ Yes</div>
-          </div>
-          <div class="sv-card sv-p2">
-            <div class="sv-priority">P2</div>
-            <div class="sv-name">Follow-Ups</div>
-            <div class="sv-desc">Leads where a meaningful conversation has started but no call is booked yet. Keep in touch until they commit to a call or go cold.</div>
-            <div class="sv-filters"><strong>Filters:</strong> Setter Owner = Me · Lead Status = IN_PROGRESS</div>
-          </div>
-          <div class="sv-card sv-p3">
-            <div class="sv-priority">P3</div>
-            <div class="sv-name">Active Re-Engagement</div>
-            <div class="sv-desc">Older leads showing recent activity signals (email opens, site visits). Lead Score ≥ threshold. Worth calling on busy dial days.</div>
-            <div class="sv-filters"><strong>Filters:</strong> Lead Score ≥ threshold · Recent Activity Signal</div>
-          </div>
-          <div class="sv-card sv-p4">
-            <div class="sv-priority">P4</div>
-            <div class="sv-name">Cold Leads</div>
-            <div class="sv-desc">Older leads with PROSPECTING or BAD_TIMING status. Lowest priority but still worth dialing on slow days or after P1–P3 are cleared.</div>
-            <div class="sv-filters"><strong>Filters:</strong> Lead Status = PROSPECTING or BAD_TIMING · Lead Refresh Active ≠ Yes</div>
-          </div>
-        </div>
+        <div id="setter-smartview-cards"></div>
       </div>
     </div>
   </div>
 
-  <!-- SHOW RATE ENGINE PAGE -->
+  <!-- ══════════════════════ SHOW RATE ENGINE ══════════════════════ -->
   <div class="page" id="page-showrate">
     <div class="page-header">
-      <h1 class="page-title">📅 Show Rate Engine</h1>
-      <p class="page-subtitle">Ensures booked meetings actually happen. Manages confirmation tracking, pre-call communication, booking advance analysis, and appointment outcome dispositions.</p>
+      <div class="page-header-inner">
+        <div class="page-engine-badge showrate-badge-header">📅 Show Rate Engine</div>
+        <h1 class="page-title">Show Rate Engine</h1>
+        <p class="page-subtitle">Ensures booked meetings actually happen. Manages confirmation tracking, pre-call communication, booking advance analysis, and appointment outcome dispositions.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div class="callout callout-info">
-        <strong>🙋 For Non-Technical Team:</strong> The Show Rate Engine is your "appointment guardian." Once a call is booked, this engine tracks whether leads confirm, sends reminders, and records what happened (showed, no-showed, canceled). Your daily confirmation view comes from this engine.
+        <span class="callout-icon">🙋</span>
+        <div><strong>For Non-Technical Team:</strong> The Show Rate Engine is your "appointment guardian." Once a call is booked, this engine tracks whether leads confirm, sends reminders, and records what happened (showed, no-showed, canceled). Your daily confirmation view comes from this engine.</div>
       </div>
 
       <div class="sop-tabs">
@@ -241,109 +288,93 @@
 
         <h3>Show Rate KPIs</h3>
         <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-name">Overall Show Rate</div>
-            <div class="kpi-formula">Completed ÷ Total Scheduled</div>
-            <div class="kpi-note">The golden metric. Green = 76%+</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-name">Confirmed Show Rate</div>
-            <div class="kpi-formula">Confirmed + Completed ÷ Total Confirmed</div>
-            <div class="kpi-note">Reference only — not tied to comp</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-name">Disposition Rate</div>
-            <div class="kpi-formula">Dispositioned ÷ Total Past Appointments</div>
-            <div class="kpi-note">Green = 66%+. Tied to specialist comp.</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-name">Avg Confirmation Lead Time</div>
-            <div class="kpi-formula">Appt Start Time − Date/Time Confirmed</div>
-            <div class="kpi-note">Goal: 24 hours before the call</div>
-          </div>
+          <div class="kpi-card"><div class="kpi-name">Overall Show Rate</div><div class="kpi-formula">Completed ÷ Total Scheduled</div><div class="kpi-note">The golden metric. Green = 76%+</div></div>
+          <div class="kpi-card"><div class="kpi-name">Confirmed Show Rate</div><div class="kpi-formula">Confirmed + Completed ÷ Total Confirmed</div><div class="kpi-note">Reference only — not tied to comp</div></div>
+          <div class="kpi-card"><div class="kpi-name">Disposition Rate</div><div class="kpi-formula">Dispositioned ÷ Total Past Appointments</div><div class="kpi-note">Green = 66%+. Tied to specialist comp.</div></div>
+          <div class="kpi-card"><div class="kpi-name">Avg Confirmation Lead Time</div><div class="kpi-formula">Appt Start Time − Date/Time Confirmed</div><div class="kpi-note">Goal: 24 hours before the call</div></div>
         </div>
 
         <h3>Confirmation Specialist Comp Structure</h3>
         <div class="comp-table">
-          <div class="comp-row comp-header">
-            <div>Zone</div><div>Disposition Rate</div><div>Show Rate</div><div>Kicker Per Confirmed+Completed</div>
-          </div>
-          <div class="comp-row comp-red">
-            <div>🔴 Red</div><div>30–49%</div><div>50–65%</div><div>$5/call</div>
-          </div>
-          <div class="comp-row comp-yellow">
-            <div>🟡 Yellow</div><div>50–65%</div><div>66–75%</div><div>$10/call</div>
-          </div>
-          <div class="comp-row comp-green">
-            <div>🟢 Green</div><div>66–75%</div><div>76%+</div><div>$15/call</div>
-          </div>
+          <div class="comp-row comp-header"><div>Zone</div><div>Disposition Rate</div><div>Show Rate</div><div>Kicker Per Confirmed+Completed</div></div>
+          <div class="comp-row comp-red"><div>🔴 Red</div><div>30–49%</div><div>50–65%</div><div>$5/call</div></div>
+          <div class="comp-row comp-yellow"><div>🟡 Yellow</div><div>50–65%</div><div>66–75%</div><div>$10/call</div></div>
+          <div class="comp-row comp-green"><div>🟢 Green</div><div>66–75%</div><div>76%+</div><div>$15/call</div></div>
         </div>
-        <div style="font-size:12px;color:var(--text3);margin-top:8px">Base Pay: $1,000–$2,000/month. Disposition Bonus (optional): 50–69% = $200 · 70%+ = $350 (requires Yellow/Green zone)</div>
+        <div class="comp-note">Base Pay: $1,000–$2,000/month. Disposition Bonus (optional): 50–69% = $200 · 70%+ = $350 (requires Yellow/Green zone)</div>
       </div>
 
       <div class="sop-content" id="tab-sre-workflows">
         <h3>Show Rate Engine Workflows</h3>
         <div id="showrate-workflows"></div>
       </div>
-
       <div class="sop-content" id="tab-sre-props">
         <h3>Show Rate Engine — Appointment Properties</h3>
         <div id="showrate-properties"></div>
       </div>
-
       <div class="sop-content" id="tab-sre-pipeline">
         <h3>Confirmation Pipeline — How to Read It</h3>
         <div class="callout callout-warning">
-          <strong>⚠️ Important:</strong> Reps should NEVER manually drag appointment cards between stages. Instead, update the "Closing Call Confirmation List" property or "Final Outcome of Appointment" property. The pipeline stage moves automatically.
+          <span class="callout-icon">⚠️</span>
+          <div><strong>Important:</strong> Reps should NEVER manually drag appointment cards between stages. Instead, update the "Closing Call Confirmation List" property or "Final Outcome of Appointment" property. The pipeline stage moves automatically.</div>
         </div>
         <div id="sre-confirmation-pipeline"></div>
       </div>
-
       <div class="sop-content" id="tab-sre-lists">
         <h3>Show Rate Engine — Contact Lists</h3>
         <div class="sre-lists-grid">
           <div class="sre-list-card">
             <div class="sre-list-id">List 2379</div>
             <div class="sre-list-name">Upcoming Appointments (&gt;48 hrs)</div>
-            <div class="sre-list-desc">All appointments more than 48 hours away. No confirmation required yet. Contacts exit this list when within 48 hours.</div>
+            <div class="sre-list-desc" style="margin-bottom:10px">All appointments more than 48 hours away. No confirmation required yet.</div>
+            <a href="https://app.hubspot.com/contacts/23635629/objectLists/2379/filters" target="_blank" rel="noopener" class="hs-link-btn">↗ Open in HubSpot</a>
           </div>
           <div class="sre-list-card">
             <div class="sre-list-id">List 2381</div>
             <div class="sre-list-name">Unconfirmed — 24–48 Hours</div>
-            <div class="sre-list-desc">Appointment is 24–48 hours away and not yet confirmed. Triggers stronger nudge email + optional SMS.</div>
+            <div class="sre-list-desc" style="margin-bottom:10px">Appointment is 24–48 hours away and not yet confirmed. Triggers stronger nudge email + optional SMS.</div>
+            <a href="https://app.hubspot.com/contacts/23635629/objectLists/2381/filters" target="_blank" rel="noopener" class="hs-link-btn">↗ Open in HubSpot</a>
           </div>
           <div class="sre-list-card">
             <div class="sre-list-id">List 2380</div>
             <div class="sre-list-name">Unconfirmed — Under 24 Hours</div>
-            <div class="sre-list-desc">Appointment is &lt;24 hours away and not yet confirmed. Highest urgency — triggers urgent SMS track.</div>
+            <div class="sre-list-desc" style="margin-bottom:10px">Appointment is &lt;24 hours away and not yet confirmed. Highest urgency — triggers urgent SMS track.</div>
+            <a href="https://app.hubspot.com/contacts/23635629/objectLists/2380/filters" target="_blank" rel="noopener" class="hs-link-btn">↗ Open in HubSpot</a>
           </div>
           <div class="sre-list-card">
             <div class="sre-list-id">List 2382</div>
             <div class="sre-list-name">Upcoming Confirmed Appointments</div>
-            <div class="sre-list-desc">Lead has confirmed their appointment. Triggers "Thanks for confirming" email and prep/logistics sequence.</div>
+            <div class="sre-list-desc" style="margin-bottom:10px">Lead has confirmed their appointment. Triggers "Thanks for confirming" email and prep/logistics sequence.</div>
+            <a href="https://app.hubspot.com/contacts/23635629/objectLists/2382/filters" target="_blank" rel="noopener" class="hs-link-btn">↗ Open in HubSpot</a>
           </div>
           <div class="sre-list-card">
             <div class="sre-list-id">List 2392</div>
             <div class="sre-list-name">Never Confirmed</div>
-            <div class="sre-list-desc">Appointment time passed with no confirmation recorded. Feeds Never Confirmed stage in Confirmation Pipeline for reporting.</div>
+            <div class="sre-list-desc" style="margin-bottom:10px">Appointment time passed with no confirmation recorded. Feeds Never Confirmed stage in Confirmation Pipeline.</div>
+            <a href="https://app.hubspot.com/contacts/23635629/objectLists/2392/filters" target="_blank" rel="noopener" class="hs-link-btn">↗ Open in HubSpot</a>
           </div>
         </div>
         <div class="callout callout-info" style="margin-top:20px">
-          <strong>Association Labels Used:</strong> Appointment ↔ Contact: <code>Disco In Progress (1-43)</code> → <code>Past Disco (1-45)</code> · <code>Closer In Progress (1-47)</code> → <code>Past Closer (1-49)</code> · Appointment ↔ Deal: <code>Disco Call</code> · <code>Closing Call</code>
+          <span class="callout-icon">🔗</span>
+          <div><strong>Association Labels Used:</strong> Appointment ↔ Contact: <code>Disco In Progress (1-43)</code> → <code>Past Disco (1-45)</code> · <code>Closer In Progress (1-47)</code> → <code>Past Closer (1-49)</code> · Appointment ↔ Deal: <code>Disco Call</code> · <code>Closing Call</code></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- CLOSER ENGINE PAGE -->
+  <!-- ══════════════════════ CLOSER ENGINE ══════════════════════ -->
   <div class="page" id="page-closer">
     <div class="page-header">
-      <h1 class="page-title">🎯 Closer Engine</h1>
-      <p class="page-subtitle">Drives all deal stage automation in the Sales Momentum Pipeline. From Calendly integration and meeting deduplication to Red Zone alerts, Closed Won onboarding, and finance approvals.</p>
+      <div class="page-header-inner">
+        <div class="page-engine-badge closer-badge-header">🎯 Closer Engine</div>
+        <h1 class="page-title">Closer Engine</h1>
+        <p class="page-subtitle">Drives all deal stage automation in the Sales Momentum Pipeline. From Calendly integration and meeting deduplication to Red Zone alerts, Closed Won onboarding, and finance approvals.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div class="callout callout-info">
-        <strong>🙋 For Non-Technical Team:</strong> The Closer Engine is your "deal brain." Every time you move a deal between stages in HubSpot, this engine automatically updates contact records, sends Slack alerts, stamps dates, and routes deals. Filling out the Conditional Stage Properties (orange box fields) before moving is required — the system depends on that data.
+        <span class="callout-icon">🙋</span>
+        <div><strong>For Non-Technical Team:</strong> The Closer Engine is your "deal brain." Every time you move a deal between stages in HubSpot, this engine automatically updates contact records, sends Slack alerts, stamps dates, and routes deals. Filling out the Conditional Stage Properties (orange box fields) before moving is required — the system depends on that data.</div>
       </div>
 
       <div class="sop-tabs">
@@ -365,12 +396,17 @@
         </div>
 
         <div class="callout callout-warning">
-          <strong>⚠️ Closer Daily Workflow Priority:</strong>
-          1. Work active appointments (In Progress or confirmed for today)
-          2. Red Zone deals — sorted by Expected Close Date
-          3. Closer Nurture deals — sorted by Next Touch Date
-          4. Closing Qualified deals
-          5. No Show / Canceled follow-ups
+          <span class="callout-icon">⚠️</span>
+          <div>
+            <strong>Closer Daily Workflow Priority:</strong>
+            <ol style="margin-top:6px;padding-left:18px;line-height:1.9">
+              <li>Work active appointments (In Progress or confirmed for today)</li>
+              <li>Red Zone deals — sorted by Expected Close Date</li>
+              <li>Closer Nurture deals — sorted by Next Touch Date</li>
+              <li>Closing Qualified deals</li>
+              <li>No Show / Canceled follow-ups</li>
+            </ol>
+          </div>
         </div>
       </div>
 
@@ -378,12 +414,10 @@
         <h3>Closer Engine Workflows</h3>
         <div id="closer-workflows"></div>
       </div>
-
       <div class="sop-content" id="tab-closer-props">
         <h3>Closer Engine — Key Properties</h3>
         <div id="closer-properties"></div>
       </div>
-
       <div class="sop-content" id="tab-closer-pipeline">
         <h3>Sales Momentum Pipeline</h3>
         <div id="deal-pipeline"></div>
@@ -391,38 +425,44 @@
     </div>
   </div>
 
-  <!-- GLOBAL WORKFLOWS PAGE -->
+  <!-- ══════════════════════ GLOBAL ══════════════════════ -->
   <div class="page" id="page-global">
     <div class="page-header">
-      <h1 class="page-title">🌐 Global Workflows</h1>
-      <p class="page-subtitle">Cross-engine workflows that tie everything together — the Big Brain booking orchestrator and the Calendly error handler safety net.</p>
+      <div class="page-header-inner">
+        <h1 class="page-title">Global Workflows</h1>
+        <p class="page-subtitle">Cross-engine workflows that tie everything together — the Big Brain booking orchestrator and the Calendly error handler safety net.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div id="showrate-workflows-global"></div>
     </div>
   </div>
 
-  <!-- QUICK LINKS PAGE -->
+  <!-- ══════════════════════ QUICK LINKS ══════════════════════ -->
   <div class="page" id="page-quicklinks">
     <div class="page-header">
-      <h1 class="page-title">🔗 Quick Links</h1>
-      <p class="page-subtitle">One-click access to every HubSpot view, dashboard, list, segment, and workflow — no searching required.</p>
+      <div class="page-header-inner">
+        <h1 class="page-title">Quick Links</h1>
+        <p class="page-subtitle">One-click access to every HubSpot view, dashboard, list, segment, and workflow — no searching required.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div id="quicklinks-container"></div>
     </div>
   </div>
 
-  <!-- ALL WORKFLOWS PAGE -->
+  <!-- ══════════════════════ ALL WORKFLOWS ══════════════════════ -->
   <div class="page" id="page-workflows">
     <div class="page-header">
-      <h1 class="page-title">⚙️ All Workflows</h1>
-      <p class="page-subtitle">Complete reference for every workflow across all engines. Filter by engine or status.</p>
+      <div class="page-header-inner">
+        <h1 class="page-title">All Workflows</h1>
+        <p class="page-subtitle">Complete reference for every workflow across all engines. Filter by engine or status.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div class="wf-filter-bar">
         <div class="filter-group">
-          <span class="filter-label">Engine:</span>
+          <span class="filter-label">Engine</span>
           <button class="wf-filter active" data-engine="all">All</button>
           <button class="wf-filter" data-engine="global">Global</button>
           <button class="wf-filter" data-engine="setter">Setter</button>
@@ -430,7 +470,7 @@
           <button class="wf-filter" data-engine="closer">Closer</button>
         </div>
         <div class="filter-group">
-          <span class="filter-label">Status:</span>
+          <span class="filter-label">Status</span>
           <button class="wf-status-btn active" data-status="all">All</button>
           <button class="wf-status-btn" data-status="enabled">✅ Enabled</button>
           <button class="wf-status-btn" data-status="disabled">⏸ Disabled</button>
@@ -440,16 +480,18 @@
     </div>
   </div>
 
-  <!-- ALL PROPERTIES PAGE -->
+  <!-- ══════════════════════ ALL PROPERTIES ══════════════════════ -->
   <div class="page" id="page-properties">
     <div class="page-header">
-      <h1 class="page-title">🗂 All Properties</h1>
-      <p class="page-subtitle">Every custom property across Contact, Deal, and Appointment objects — with definitions, triggers, and usage notes.</p>
+      <div class="page-header-inner">
+        <h1 class="page-title">All Properties</h1>
+        <p class="page-subtitle">Every custom property across Contact, Deal, and Appointment objects — with definitions, triggers, and usage notes.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div class="prop-filter-bar">
         <div class="filter-group">
-          <span class="filter-label">Object:</span>
+          <span class="filter-label">Object</span>
           <button class="prop-filter active" data-obj="all">All Objects</button>
           <button class="prop-filter" data-obj="contact">👤 Contact</button>
           <button class="prop-filter" data-obj="deal">💼 Deal</button>
@@ -461,59 +503,70 @@
     </div>
   </div>
 
-  <!-- PIPELINES PAGE -->
+  <!-- ══════════════════════ PIPELINES ══════════════════════ -->
   <div class="page" id="page-pipelines">
     <div class="page-header">
-      <h1 class="page-title">🔀 Pipelines</h1>
-      <p class="page-subtitle">Full stage-by-stage reference for the Sales Momentum Pipeline and the Confirmation Pipeline — including conditional properties required at each stage.</p>
+      <div class="page-header-inner">
+        <h1 class="page-title">Pipelines</h1>
+        <p class="page-subtitle">Full stage-by-stage reference for the Sales Momentum Pipeline and the Confirmation Pipeline — including conditional properties required at each stage.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div id="pipelines-container"></div>
     </div>
   </div>
 
-  <!-- LISTS PAGE -->
+  <!-- ══════════════════════ LISTS ══════════════════════ -->
   <div class="page" id="page-lists">
     <div class="page-header">
-      <h1 class="page-title">📋 Lists & Views</h1>
-      <p class="page-subtitle">All HubSpot lists and Smart Views used across the system — static lists for segmentation and active lists for dynamic filtering.</p>
+      <div class="page-header-inner">
+        <h1 class="page-title">Lists &amp; Views</h1>
+        <p class="page-subtitle">All HubSpot lists and Smart Views used across the system — static lists for segmentation and active lists for dynamic filtering. Every card has a direct link to open in HubSpot.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div id="lists-container"></div>
     </div>
   </div>
 
-  <!-- SLACK PAGE -->
+  <!-- ══════════════════════ SLACK ══════════════════════ -->
   <div class="page" id="page-slack">
     <div class="page-header">
-      <h1 class="page-title">💬 Slack Channels</h1>
-      <p class="page-subtitle">Every Slack channel and webhook used by the system — what fires, when, and why.</p>
+      <div class="page-header-inner">
+        <h1 class="page-title">Slack Channels</h1>
+        <p class="page-subtitle">Every Slack channel and webhook used by the system — what fires, when, and why.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div id="slack-container"></div>
     </div>
   </div>
 
-  <!-- INTEGRATIONS PAGE -->
+  <!-- ══════════════════════ INTEGRATIONS ══════════════════════ -->
   <div class="page" id="page-integrations">
     <div class="page-header">
-      <h1 class="page-title">🔌 Integrations</h1>
-      <p class="page-subtitle">All external tools connected to HubSpot — how they connect, what data flows, and how each booking travels through the full integration stack.</p>
+      <div class="page-header-inner">
+        <h1 class="page-title">Integrations</h1>
+        <p class="page-subtitle">All external tools connected to HubSpot — how they connect, what data flows, and how each booking travels through the full integration stack.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div id="integrations-container"></div>
     </div>
   </div>
 
-  <!-- LEAD STATUS PAGE -->
+  <!-- ══════════════════════ LEAD STATUS ══════════════════════ -->
   <div class="page" id="page-leadstatus">
     <div class="page-header">
-      <h1 class="page-title">🏷 Lead Statuses</h1>
-      <p class="page-subtitle">Every possible Lead Status value — what it means and which Smart View it maps to.</p>
+      <div class="page-header-inner">
+        <h1 class="page-title">Lead Statuses</h1>
+        <p class="page-subtitle">Every possible Lead Status value — what it means and which Smart View it maps to.</p>
+      </div>
     </div>
     <div class="content-wrap">
       <div class="callout callout-info">
-        <strong>📌 The Master Filter:</strong> Lead Status is the single most important property in the Setter CRM. It determines which Smart View a lead appears in, and drives lifecycle stage upgrades. Never set it manually unless you know exactly what you're doing.
+        <span class="callout-icon">📌</span>
+        <div><strong>The Master Filter:</strong> Lead Status is the single most important property in the Setter CRM. It determines which Smart View a lead appears in, and drives lifecycle stage upgrades. Never set it manually unless you know exactly what you're doing.</div>
       </div>
       <div id="lead-status-grid-full"></div>
     </div>

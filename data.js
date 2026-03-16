@@ -753,396 +753,154 @@ WB.properties = {
 };
 
 // ============================================================
-// PIPELINES
+// PORTAL + WORKFLOW URL HELPER
 // ============================================================
-WB.pipelines = {
-  deal: {
-    id: "840860960",
-    name: "Sales Momentum Pipeline",
-    object: "Deal",
-    description: "The primary deal pipeline tracking every prospect from first setter call through to closed won. 13 stages covering the full sales journey. Stages marked AUTO should never be moved manually — they are set exclusively by scheduling links and workflow automations. Each stage has specific 'Conditional Stage Properties' that act as gatekeepers — they must be filled before the deal can move.",
-    stages: [
-      {
-        group: "Setter Funnel — Auto Stages (Scheduling Links ONLY)",
-        groupNote: "⚠️ Do NOT move these stages manually. They are set exclusively by scheduling links.",
-        stages: [
-          {
-            name: "Setter Call Booked",
-            probability: "10%",
-            type: "auto",
-            moveRule: "DO NOT move manually. Set automatically when a prospect books a Setter Call via scheduling link.",
-            conditional: "No conditional properties — this stage is set by automation only.",
-            conditionalOptions: [],
-            desc: "A Setter/Implementation call has been scheduled. The Big Brain workflow created the Appointment record and moved the deal here automatically.",
-            triggers: "Big Brain workflow fires. Appointment object created. Zoom link written to Contact. Slack notification sent to #confirmation-channel. Stage Automation copies last_disco_call_booked datetime + sets discovery_call_outcome = Scheduled."
-          },
-          {
-            name: "Setter Follow Up Call Booked",
-            probability: "20%",
-            type: "auto",
-            moveRule: "DO NOT move manually. Set automatically when a Setter Follow Up is booked via scheduling link.",
-            conditional: "No conditional properties — this stage is set by automation only.",
-            conditionalOptions: [],
-            desc: "A follow-up Setter Call has been scheduled. Used when the lead needs more time or context before moving to a Closer call.",
-            triggers: "Big Brain workflow fires on Setter Follow Up booking. New Appointment record created. Stage Automation copies setter_follow_up_call_datetime."
-          },
-        ]
-      },
-      {
-        group: "Setter Funnel — Manual Outcome Stages",
-        groupNote: "These stages are moved manually by Setters after an outcome occurs.",
-        stages: [
-          {
-            name: "Setter No Show / Canceled",
-            probability: "10%",
-            type: "manual",
-            moveRule: "Setter moves deal here after a missed or canceled Implementation call.",
-            conditional: "REQUIRED — Must select one of the following before moving:",
-            conditionalOptions: ["Canceled by Us", "Canceled by Prospect", "No Show"],
-            desc: "The Setter Call was missed or canceled. The rep must document the reason. This distinction matters — 'Canceled by Us' vs 'No Show' feeds different report segments.",
-            triggers: "Stage Automation sets Contact Lead Status = NO_SHOW/CANCEL. Branches on disco__no_show__cancel_type and writes matching outcome values. No Show: stamps disco_call_no_show_date."
-          },
-          {
-            name: "Setter Qualified / Nurture",
-            probability: "20%",
-            type: "manual",
-            moveRule: "Setter moves here when the lead was qualified but not immediately booked into a Closer Call.",
-            conditional: "REQUIRED — Must choose a nurture type AND fill the corresponding date:",
-            conditionalOptions: [
-              "Setter Nurture → then fill: Setter - Next Touch Date (Nurture)",
-              "Closer Nurture → then fill: Closer - Next Touch Date (Nurture)"
-            ],
-            desc: "Qualified lead who needs follow-up before booking a Closer. Short-term holding stage. A concrete Next Touch Date is mandatory — if left blank, the deal is treated as Lost in Nurture views.",
-            triggers: "Stage Automation sets discovery_call_outcome = Completed on deal and contact. Contact Lifecycle → salesqualifiedlead. Contact Lead Status → IN_PROGRESS."
-          },
-          {
-            name: "DQ",
-            probability: "0% (Lost)",
-            type: "lost",
-            moveRule: "Setter or Closer moves here when a lead is disqualified at any stage of the funnel.",
-            conditional: "REQUIRED — Must fill ONE of the following:",
-            conditionalOptions: [
-              "Setter Call - DQ Reason (Dropdown): Financially Unqualified",
-              "Setter Call - DQ Reason (Dropdown): Not a fit for Product/Service",
-              "Setter Call - DQ Reason (Dropdown): Decision Maker Not Present",
-              "Setter Call - DQ Reason (Dropdown): Other",
-              "Closing Call - DQ Reason (Text Box): free-text explanation"
-            ],
-            desc: "Lead is disqualified and removed from the active pipeline. If disqualified at the Setter stage, use the dropdown. If disqualified at the Closer stage, use the text box.",
-            triggers: "Stage Automation (action 53) detects which DQ reason field is filled and routes accordingly. Setter DQ: discovery outcomes = Completed, Contact Lead Status = UNQUALIFIED. Closer DQ: closing outcomes written, Contact Lead Status = UNQUALIFIED."
-          },
-        ]
-      },
-      {
-        group: "Closer Funnel — Auto Stages (Scheduling Links ONLY)",
-        groupNote: "⚠️ Do NOT move these stages manually. They are set exclusively by scheduling links.",
-        stages: [
-          {
-            name: "Closing Call Booked",
-            probability: "30%",
-            type: "auto",
-            moveRule: "DO NOT move manually. Set automatically when a Closer Call is booked via scheduling link.",
-            conditional: "No conditional properties — this stage is set by automation only.",
-            conditionalOptions: [],
-            desc: "A Closer/Strategy Session has been scheduled. The Big Brain workflow moved the deal here when the Setter booked the Closer Call via Calendly.",
-            triggers: "Big Brain workflow fires. Appointment object created. Closer assigned. Slack notification to #confirmation-channel. Stage Automation copies last_closing_call_datetime + assigns deal owner from closer_owner."
-          },
-          {
-            name: "Closing Follow Up Call Booked",
-            probability: "40%",
-            type: "auto",
-            moveRule: "DO NOT move manually. Set automatically when a Closer Follow Up is booked via scheduling link.",
-            conditional: "No conditional properties — this stage is set by automation only.",
-            conditionalOptions: [],
-            desc: "A follow-up Closer Call has been scheduled for a Red Zone or Nurture deal.",
-            triggers: "Big Brain workflow fires on Closer Follow Up booking. New Appointment record created. Stage Automation copies last_closer_follow_up_call_datetime."
-          },
-        ]
-      },
-      {
-        group: "Closer Funnel — Manual Outcome Stages",
-        groupNote: "These stages are moved manually by Closers after an outcome occurs.",
-        stages: [
-          {
-            name: "Closing Call No Show / Canceled",
-            probability: "10%",
-            type: "manual",
-            moveRule: "Closer moves deal here after a missed or canceled Strategy Session.",
-            conditional: "REQUIRED — Must select one of the following before moving:",
-            conditionalOptions: ["Canceled by Us", "Canceled by Prospect", "No Show"],
-            desc: "The Closer Call was missed or canceled. Reason must be documented to feed show rate and cancellation source reporting.",
-            triggers: "Stage Automation sets Contact Lead Status = NO_SHOW/CANCEL. Branches on closing__no_show__cancel_type. No Show: stamps closing_call_no_show_date."
-          },
-          {
-            name: "Closing Qualified / Nurture",
-            probability: "40%",
-            type: "manual",
-            moveRule: "Closer moves here when a lead is qualified but needs follow-up before closing.",
-            conditional: "REQUIRED — Must choose a nurture type AND fill the corresponding date:",
-            conditionalOptions: [
-              "Setter Nurture → then fill: Setter - Next Touch Date (Nurture)",
-              "Closer Nurture → then fill: Closer - Next Touch Date (Nurture)"
-            ],
-            desc: "Qualified lead who has been through a Closer Call but needs more time. Must set a concrete Next Touch Date.",
-            triggers: "Stage Automation sets closer_call_outcome = Canceled by Team, contact closing_call_outcome = Completed, contact Lifecycle = opportunity, contact Lead Status = OPEN_DEAL. Stamps offer_made_date."
-          },
-          {
-            name: "Red Zone",
-            probability: "80%",
-            type: "manual",
-            moveRule: "Closer moves here when a deal is closing within 1–14 days. This is the highest-priority manual stage.",
-            conditional: "REQUIRED — Must fill ALL 3 fields before moving:",
-            conditionalOptions: [
-              "Deal Type: New Business | Existing Business | Front End Offer | Back End Offer | Other",
-              "Red Zone Type: Submitted Deposit | Verbally Committed to Moving Forward | Follow Up Scheduled",
-              "Expected Close Date: (specific date required)"
-            ],
-            desc: "Deal is on the 1-yard line. All three conditional fields are mandatory gatekeepers — no exceptions. After this, the deal appears in forecasting reports for likely weekly revenue.",
-            triggers: "Stage Automation: Posts 🚩🚩 NEW RED-ZONE Slack alert to C0ADDPT64BE. Sets deal closer_call_outcome = Canceled by Team. Contact Lead Status = RED_ZONE. Stamps offer_made_date. Sets offer_made_ = Yes."
-          },
-        ]
-      },
-      {
-        group: "Final Approval & Terminal Stages",
-        groupNote: "These stages represent the end states of a deal — approval, win, or loss.",
-        stages: [
-          {
-            name: "Pending Approval",
-            probability: "90%",
-            type: "manual",
-            moveRule: "Closer moves here when a deal is verbally committed and payment details are being finalized.",
-            conditional: "REQUIRED — Must fill ALL 5 fields before moving:",
-            conditionalOptions: [
-              "Amount: (dollar amount required)",
-              "Was Financing Used? Yes, Affirm | Yes, Klarna | Yes, SplitIt | No",
-              "What type of lead is this? One Call Close | Follow Up / Pipeline | Outbound Self Set",
-              "Payment Plan: PIF | Affirm PIF | 3 Pay | VIP Foundations - 90 Day | 3 Month x4 | 6 Month x2 | 12 Month | Special Arrangement | VIP - BFCM - PIF - 6200 | VIP - BFCM - 2300 down 3900",
-              "Payment Special Arrangement Description: (only if Special Arrangement selected)"
-            ],
-            desc: "Deal is in final approval. All payment details must be documented. Finance team references this stage for collection planning.",
-            triggers: "Stage Automation fires Zapier webhook → Slack #Sales-Approval notification. Closing Conditions Met checkboxes (Agreement Signed + Payment Made) must BOTH be ticked before moving to Closed Won."
-          },
-          {
-            name: "Closed Won",
-            probability: "100% (Won)",
-            type: "won",
-            moveRule: "Move here ONLY after both Closing Conditions Met boxes are ticked: Agreement Signed ✓ AND Payment Made ✓.",
-            conditional: "REQUIRED — Both Deal Type and Amount must be filled. Both Closing Conditions Met checkboxes must be checked.",
-            conditionalOptions: [
-              "Deal Type: (required)",
-              "Amount: (required)",
-              "Closing Conditions: Agreement Signed ✓",
-              "Closing Conditions: Payment Made ✓"
-            ],
-            desc: "Deal is paid and signed. Client is onboarded. This is the final stage that feeds all revenue attribution, commission tracking, and the external finance sheet.",
-            triggers: "Stage Automation: Sets contact marketing email subscription (OPT_IN). Contact Lifecycle = customer. Contact Lead Status = CLOSED_WON. Stamps closedate = now. Fires Zapier webhook for win notification."
-          },
-          {
-            name: "Closed Lost",
-            probability: "0% (Lost)",
-            type: "lost",
-            moveRule: "Move here when a deal is permanently closed without a purchase and no further follow-up is planned.",
-            conditional: "REQUIRED — Deal Type and Amount must be filled.",
-            conditionalOptions: [
-              "Deal Type: (required)",
-              "Amount: (required)"
-            ],
-            desc: "Deal is permanently closed without a purchase. Lead is removed from active pipeline views and enters loss reason reporting.",
-            triggers: "Stage Automation: Contact Lead Status = CLOSED_LOST. Contact Lifecycle = opportunity. Stamps offer_made_date. Association label changed."
-          },
-        ]
-      }
+WB.hubspotPortalId = "23635629";
+WB.getWorkflowUrl = function(id) {
+  return "https://app.hubspot.com/workflows/" + WB.hubspotPortalId + "/platform/flow/" + id;
+};
+
+// ============================================================
+// SMART VIEWS — split by object with real HubSpot URLs
+// ============================================================
+WB.smartViews = [
+  {
+    category: "contact",
+    categoryLabel: "Contact Object",
+    items: [
+      { name: "P1: New Hot Leads",               url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57972208/list",  desc: "Fresh opt-ins from today. Lead Status = NEW. Highest priority dialing queue. Call within 30 minutes." },
+      { name: "P2: Connected & Needs Follow Up",  url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57972472/list",  desc: "Meaningful conversation started but no call booked. Lead Status = IN_PROGRESS." },
+      { name: "P3: Second Touch for P1",          url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57973166/list",  desc: "Older leads showing recent activity signals. Third-priority dialing queue." },
+      { name: "P4: Warm Leads",                   url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57973180/list",  desc: "Older leads with PROSPECTING or BAD_TIMING status. Lowest setter priority." },
+      { name: "No-Shows / Cancels",               url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57973212/list",  desc: "Leads whose appointment was missed or canceled. Reactivation queue." },
+      { name: "Confirmation Specialist View",     url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/58348639/list",  desc: "Daily confirmation queue. Filtered by Confirmation Owner = Me. Work this every morning." }
     ]
   },
-
-  appointment: {
-    id: "850614794",
-    name: "Confirmation Pipeline",
-    object: "Appointment",
-    description: "All appointment records flow through this pipeline automatically. Reps should NEVER manually drag appointment cards between stages. Instead, reps update two key properties: (1) 'Closing Call Confirmation List' to update confirmation status, and (2) 'Final Outcome of Appointment' after the call occurs. The pipeline stage moves automatically based on these property changes.",
-    stages: [
-      {
-        group: "Active Appointment Stages",
-        groupNote: "All stages in this group are managed automatically. Do not move manually.",
-        stages: [
-          {
-            name: "Upcoming Appointments",
-            type: "auto",
-            desc: "Default stage for all newly created appointment records. Every booking lands here first automatically.",
-            conditional: "No action required. System places records here automatically.",
-            conditionalOptions: [],
-            triggers: "Auto-set by 'Global Big Brain' workflow when Appointment is created.",
-            moveRule: "Do not move manually.",
-            status: "Open"
-          },
-          {
-            name: "Scheduled (<48 Hours Out)",
-            type: "auto",
-            desc: "Appointment is 24–48 hours away. Contacts in List 2381 (Unconfirmed <48h) trigger this stage via the Confirmation List + Confirmation Disposition workflows.",
-            conditional: "Auto-set by Confirmation Disposition workflow when setter_confirmation_list or closing_call_confirmation_list = 'Unconfirmed - <48 Hours'.",
-            conditionalOptions: [],
-            triggers: "Triggered by list membership in List 2381.",
-            moveRule: "Do not move manually.",
-            status: "Open"
-          },
-          {
-            name: "Scheduled (<24 Hours Out)",
-            type: "auto",
-            desc: "Appointment is under 24 hours away and still unconfirmed. Highest urgency for confirmation outreach.",
-            conditional: "Auto-set when confirmation list = 'Unconfirmed - <24 Hours' (List 2380).",
-            conditionalOptions: [],
-            triggers: "Triggered by list membership in List 2380. Pipeline stage ID: 1268114333.",
-            moveRule: "Do not move manually.",
-            status: "Open"
-          },
-          {
-            name: "Confirmed",
-            type: "auto",
-            desc: "Lead verbally confirmed their appointment. Rep updates the 'Closing Call Confirmation List' property to 'Upcoming Confirmed Appointments' to trigger this.",
-            conditional: "Rep updates confirmation list property → 'Upcoming Confirmed Appointments'. Pipeline stage follows automatically.",
-            conditionalOptions: ["Confirmation Disposition workflow detects confirmed status and moves stage (ID: 1269136023)"],
-            triggers: "Auto-moved when Confirmation List = 'Upcoming Confirmed Appointments'. Stamps datetime_confirmed. Powers 'Confirmed Show Rate' metric on dashboard.",
-            moveRule: "Do not drag manually. Update the 'Confirmation Stage' property instead.",
-            status: "Closed",
-            id: "1269136023"
-          },
-          {
-            name: "Never Confirmed",
-            type: "auto",
-            desc: "Appointment time has passed with no confirmation recorded. System auto-moves records here to flag missed confirmations for reporting.",
-            conditional: "Auto-moved by time-based logic: appointment time passed AND confirmation status still blank or unconfirmed.",
-            conditionalOptions: [],
-            triggers: "Auto-moved when confirmation list = 'Never Confirmed' (List 2392). Pipeline stage ID: 1269136024.",
-            moveRule: "Do not move manually.",
-            status: "Closed",
-            id: "1269136024"
-          },
-          {
-            name: "In Progress",
-            type: "auto",
-            desc: "The appointment is actively happening right now. Set 5 minutes before start time by the 'Appointment — In Progress?' workflow.",
-            conditional: "No action required. System auto-sets this 5 minutes before the scheduled start time.",
-            conditionalOptions: [],
-            triggers: "Auto-set by 'Appointment — In Progress?' workflow (1770760586) when time_until_appointment < 5 minutes.",
-            moveRule: "Do not move manually.",
-            status: "Open",
-            id: "1268114331"
-          },
-        ]
-      },
-      {
-        group: "Past Appointment Stages",
-        groupNote: "Records move here automatically when a rep sets the 'Final Outcome of Appointment' property.",
-        stages: [
-          {
-            name: "Past (Completed)",
-            type: "auto",
-            desc: "Appointment happened and was completed. Rep must set 'Final Outcome of Appointment' = Completed on the Appointment record to trigger this move.",
-            conditional: "Rep sets 'Final Outcome of Appointment' = Completed on the Appointment record.",
-            conditionalOptions: ["Set property: Final Outcome of Appointment → Completed"],
-            triggers: "Auto-moved by Final Appointment Disposition workflow (1755975999) when outcome = Completed. Association label swaps to 'Past Disco' or 'Past Closer'. Record archived from active views.",
-            moveRule: "Do not drag manually. Set the 'Final Outcome of Appointment' property.",
-            status: "Closed"
-          },
-          {
-            name: "Past (No Show / Canceled)",
-            type: "auto",
-            desc: "Appointment resulted in a No Show or Cancellation. Rep must set 'Final Outcome of Appointment' to the appropriate value.",
-            conditional: "Rep sets 'Final Outcome of Appointment' = No Show, Canceled by Us, or Canceled by Them.",
-            conditionalOptions: [
-              "Set property: Final Outcome of Appointment → No Show",
-              "Set property: Final Outcome of Appointment → Canceled by Us",
-              "Set property: Final Outcome of Appointment → Canceled by Them"
-            ],
-            triggers: "Auto-moved by Final Appointment Disposition workflow. Association label swaps to 'Past Disco' or 'Past Closer'. Removed from active confirmation queue.",
-            moveRule: "Do not drag manually. Set the 'Final Outcome of Appointment' property.",
-            status: "Closed"
-          },
-          {
-            name: "Rescheduled",
-            type: "auto",
-            desc: "Appointment was rescheduled. Final Disposition workflow sets this stage when sync outcome = Rescheduled.",
-            conditional: "Auto-set by Final Disposition workflow when outcome = Rescheduled.",
-            conditionalOptions: [],
-            triggers: "Auto-moved by Final Appointment Disposition workflow (stage ID: 1278790583). Association labels updated.",
-            moveRule: "Do not move manually.",
-            status: "Open",
-            id: "1278790583"
-          },
-          {
-            name: "Canceled by Us",
-            type: "auto",
-            desc: "Appointment was canceled by the team/rep during the confirmation process.",
-            conditional: "Set by Cancellation Disposition workflow when 'Canceled by Us' path fires. Pipeline stage ID: 1268114334.",
-            conditionalOptions: [],
-            triggers: "Cancellation Disposition workflow (1755406259). Deal moved to corresponding No Show/Cancel stage.",
-            moveRule: "Do not move manually.",
-            status: "Closed",
-            id: "1268114334"
-          },
-          {
-            name: "Canceled by Them",
-            type: "auto",
-            desc: "Appointment was canceled by the prospect during the confirmation process.",
-            conditional: "Set by Cancellation Disposition workflow when 'Canceled by Prospect' path fires. Pipeline stage ID: 1268114335.",
-            conditionalOptions: [],
-            triggers: "Cancellation Disposition workflow (1755406259). Deal moved to corresponding No Show/Cancel stage.",
-            moveRule: "Do not move manually.",
-            status: "Closed",
-            id: "1268114335"
-          },
-        ]
-      }
+  {
+    category: "deal",
+    categoryLabel: "Deal Object",
+    items: [
+      { name: "Red Zone List",             url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180191/list",  desc: "All deals in Red Zone stage, sorted by Expected Close Date. Priority 1 for Closers." },
+      { name: "Closer Nurture List",       url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180210/list",  desc: "All Nurture deals sorted by Next Touch Date. Blank date = treat as Lost." },
+      { name: "My Upcoming Appointments",  url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180217/list",  desc: "Deal-level view of upcoming appointments assigned to you." },
+      { name: "My At-Risk Deals",          url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180362/list",  desc: "Deals flagged as at-risk — expected close date approaching with no movement." }
     ]
   }
-};
+];
+
+// ============================================================
+// DASHBOARDS
+// ============================================================
+WB.dashboards = [
+  { name: "Show Rate Engine Dashboard — General", url: "https://app.hubspot.com/reports-dashboard/23635629/view/18694861", desc: "Overall show rate, confirmation rates, and appointment outcomes across all call types." },
+  { name: "Setter Engine Dashboard",              url: "https://app.hubspot.com/reports-dashboard/23635629/view/18588940", desc: "Speed to Lead, dial volume, lead status distribution, and setter KPIs." },
+  { name: "Closer Engine Dashboard — Main",       url: "https://app.hubspot.com/reports-dashboard/23635629/view/18647844", desc: "Deal pipeline health, close rates, Red Zone forecasting, and Closer performance." },
+  { name: "Speed To Lead Tracking",               url: "https://app.hubspot.com/reports-dashboard/23635629/view/18566973", desc: "Detailed STL breakdown by bucket, rep, and time period." }
+];
+
+// ============================================================
+// LEAD SCORING
+// ============================================================
+WB.leadScoring = [
+  { name: "Setter Engine Lead Score", url: "https://app.hubspot.com/lead-scoring/23635629/details/514456305435", desc: "Composite lead score driving P1-P4 Smart View priority sorting. Higher score = dial first." }
+];
+
+// ============================================================
+// SEGMENTS / LISTS — ALL with real HubSpot URLs
+// ============================================================
+WB.segments = [
+  {
+    group: "Show Rate / Appointment Lists",
+    items: [
+      { name: "Sales - Upcoming Appts",                    id: "2379", url: "https://app.hubspot.com/contacts/23635629/objectLists/2379/filters", desc: "All contacts with an upcoming appointment (>48 hrs). Base list for confirmation flow." },
+      { name: "Sales - Upcoming Unconfirmed Appts - 48h",  id: "2381", url: "https://app.hubspot.com/contacts/23635629/objectLists/2381/filters", desc: "Appointment 24-48 hours out, not yet confirmed. Triggers stronger nudge messaging." },
+      { name: "Sales - Upcoming Confirmed Appts",          id: "2382", url: "https://app.hubspot.com/contacts/23635629/objectLists/2382/filters", desc: "Contacts who confirmed their appointment. Triggers thanks + prep sequence." },
+      { name: "Sales - Upcoming Unconfirmed Appts - 24h",  id: "2380", url: "https://app.hubspot.com/contacts/23635629/objectLists/2380/filters", desc: "Appointment under 24 hours, not confirmed. Highest urgency confirmation outreach." },
+      { name: "Show Rate Engine - Never Confirmed",        id: "2392", url: "https://app.hubspot.com/contacts/23635629/objectLists/2392/filters", desc: "Appointment time passed with no confirmation recorded. Feeds Never Confirmed pipeline stage." }
+    ]
+  },
+  {
+    group: "Setter Engine Lists",
+    items: [
+      { name: "Setter Engine - Leads to Be Set",                        id: "2212", url: "https://app.hubspot.com/contacts/23635629/objectLists/2212/filters", desc: "Active list of leads currently in the Lead Refresh cooldown (lead_refresh_active = Yes)." },
+      { name: "Bad Data",                                               id: "2179", url: "https://app.hubspot.com/contacts/23635629/objectLists/2179/filters", desc: "Contacts with invalid phone numbers or bad email data. Removed from dialing queue." },
+      { name: "Active - Quiz Leads (Warm - No App)",                    id: "2182", url: "https://app.hubspot.com/contacts/23635629/objectLists/2182/filters", desc: "Quiz funnel leads who are warm but have not submitted an application yet." },
+      { name: "Active - VSL Leads (Warm - No App)",                     id: "2181", url: "https://app.hubspot.com/contacts/23635629/objectLists/2181/filters", desc: "VSL funnel leads who are warm but have not submitted an application yet." },
+      { name: "Active - High Intent (App + No Call)",                   id: "2180", url: "https://app.hubspot.com/contacts/23635629/objectLists/2180/filters", desc: "Leads who submitted an application but have not been called yet. Priority dial segment." },
+      { name: "Setter Engine - Setter Nurture List from Deal Pipeline", id: "2319", url: "https://app.hubspot.com/contacts/23635629/objectLists/2319/filters", desc: "Contacts tied to deals in Setter Nurture stage. Setter follow-up queue." }
+    ]
+  },
+  {
+    group: "Closer Engine Lists",
+    items: [
+      { name: "Closer Engine - Contacts with Deal in Nurture Stage", id: "2371", url: "https://app.hubspot.com/contacts/23635629/objectLists/2371/filters", desc: "Contacts whose deal is in Closing Qualified/Nurture stage. Enrolled in Closer Nurture email workflow." }
+    ]
+  },
+  {
+    group: "Master Static Lists",
+    items: [
+      { name: "Master Static - Quiz",             id: "2174", url: "https://app.hubspot.com/contacts/23635629/objectLists/2174/filters", desc: "All-time master list of Quiz funnel opt-ins." },
+      { name: "Master Static - VSL",              id: "2173", url: "https://app.hubspot.com/contacts/23635629/objectLists/2173/filters", desc: "All-time master list of VSL funnel opt-ins." },
+      { name: "Master Static - Low Ticket (PQL)", id: "2170", url: "https://app.hubspot.com/contacts/23635629/objectLists/2170/filters", desc: "All-time list of Low-Ticket purchasers. Product Qualified Leads - highest intent segment." },
+      { name: "ALL LEADS | Master Static List",   id: "2079", url: "https://app.hubspot.com/contacts/23635629/objectLists/2079/filters", desc: "The full universe - every lead who has ever opted in across all funnels." }
+    ]
+  }
+];
 
 // ============================================================
 // LEAD STATUSES
 // ============================================================
 WB.leadStatuses = [
-  { status: "NEW", color: "green", def: "Fresh opt-in. Not yet contacted. Highest priority — appears in P1 Smart View." },
-  { status: "PROSPECTING", color: "blue", def: "Contact attempted but no meaningful conversation yet. Still in active dialing queue." },
-  { status: "IN_PROGRESS", color: "amber", def: "Meaningful conversation had — not yet booked. Triggers SQL lifecycle upgrade. Appears in P2 Smart View." },
-  { status: "MEETING_BOOKED", color: "green", def: "Discovery or Closer call is on the calendar. Managed by the Show Rate Engine." },
-  { status: "OPEN_DEAL", color: "blue", def: "Active deal in the pipeline. Closer is managing." },
-  { status: "BAD_TIMING", color: "orange", def: "Lead explicitly said to call back later. Re-enters queue after specified time." },
-  { status: "NO_PROGRESS", color: "gray", def: "Multiple attempts made with no engagement. Will cycle back based on activity score." },
-  { status: "NO_SHOW/CANCEL", color: "red", def: "Appointment was missed or canceled. Reactivation sequence triggered." },
-  { status: "UNQUALIFIED", color: "red", def: "Lead does not meet minimum criteria (e.g., investment < $1k). Removed from setter queue." },
-  { status: "DECAYING", color: "orange", def: "Lead was once active but is losing engagement. Low-priority re-engagement." },
-  { status: "RED_ZONE", color: "red", def: "Deal is on the 1-yard line. Closing within 1–14 days. Highest Closer priority." },
-  { status: "CLOSED_WON", color: "green", def: "Client. Deal paid and signed. Removed from sales pipeline." },
-  { status: "CLOSED_LOST", color: "gray", def: "Permanently closed without purchase." },
-  { status: "BAD_DATA", color: "gray", def: "Invalid contact information (wrong number, bad email). Removed from dialing queue." },
-  { status: "DO_NOT_CONTACT", color: "red", def: "Lead has opted out or requested no contact. Never dial." },
-  { status: "BLACKLISTED_CUSTOMER", color: "red", def: "Former client who should not be re-sold to." },
-  { status: "REPEAT_CUSTOMER", color: "green", def: "Existing client purchasing an additional product." },
-  { status: "CONTACT (NON-LEAD)", color: "gray", def: "Person in the system who is not a sales lead (e.g., team member, partner, vendor)." },
+  { status: "NEW",                   color: "green",  def: "Fresh opt-in. Not yet contacted. Highest priority — appears in P1 Smart View." },
+  { status: "PROSPECTING",           color: "blue",   def: "Contact attempted but no meaningful conversation yet. Still in active dialing queue." },
+  { status: "IN_PROGRESS",           color: "amber",  def: "Meaningful conversation had — not yet booked. Triggers SQL lifecycle upgrade. Appears in P2 Smart View." },
+  { status: "MEETING_BOOKED",        color: "green",  def: "Discovery or Closer call is on the calendar. Managed by the Show Rate Engine." },
+  { status: "OPEN_DEAL",             color: "blue",   def: "Active deal in the pipeline. Closer is managing." },
+  { status: "BAD_TIMING",            color: "orange", def: "Lead explicitly said to call back later. Re-enters queue after specified time." },
+  { status: "NO_PROGRESS",           color: "gray",   def: "Multiple attempts made with no engagement. Will cycle back based on activity score." },
+  { status: "NO_SHOW/CANCEL",        color: "red",    def: "Appointment was missed or canceled. Reactivation sequence triggered." },
+  { status: "UNQUALIFIED",           color: "red",    def: "Lead does not meet minimum criteria (e.g., investment < $1k). Removed from setter queue." },
+  { status: "DECAYING",              color: "orange", def: "Lead was once active but is losing engagement. Low-priority re-engagement." },
+  { status: "RED_ZONE",              color: "red",    def: "Deal is on the 1-yard line. Closing within 1-14 days. Highest Closer priority." },
+  { status: "CLOSED_WON",            color: "green",  def: "Client. Deal paid and signed. Removed from sales pipeline." },
+  { status: "CLOSED_LOST",           color: "gray",   def: "Permanently closed without purchase." },
+  { status: "BAD_DATA",              color: "gray",   def: "Invalid contact information (wrong number, bad email). Removed from dialing queue." },
+  { status: "DO_NOT_CONTACT",        color: "red",    def: "Lead has opted out or requested no contact. Never dial." },
+  { status: "BLACKLISTED_CUSTOMER",  color: "red",    def: "Former client who should not be re-sold to." },
+  { status: "REPEAT_CUSTOMER",       color: "green",  def: "Existing client purchasing an additional product." },
+  { status: "CONTACT (NON-LEAD)",    color: "gray",   def: "Person in the system who is not a sales lead (e.g., team member, partner, vendor)." }
 ];
 
 // ============================================================
-// LISTS & VIEWS
+// LISTS (for Lists page - with open links)
 // ============================================================
 WB.lists = [
-  { type: "static", id: "2079", name: "All Opt-ins", desc: "Master list of every lead who submitted an opt-in form, regardless of funnel. Used as the base universe for all lead-level reporting." },
-  { type: "static", id: "2173", name: "VSL Funnel — Opt-ins", desc: "Leads who entered through the Video Sales Letter funnel. Used in funnel-specific reporting and Delegation Date/Time branching." },
-  { type: "static", id: "2174", name: "Quiz Funnel — Opt-ins", desc: "Leads who entered through the Quiz funnel. Used in funnel-specific reporting and Delegation Date/Time branching." },
-  { type: "static", id: "2170", name: "PQL — Product Qualified Leads", desc: "Contacts who have completed a Low-Ticket purchase. Highest-intent lead segment. Added by 'PQL Helper Workflow'. Triggers priority dialing treatment." },
-  { type: "static", id: "2371", name: "Closer Nurture List", desc: "Contacts with deals in 'Closing Qualified/Nurture' stage with Closer Nurture type. Enrolled into the 'Closer Engine — Communication — Closer Nurture' workflow for automated nurture emails." },
-  { type: "active", id: "2212", name: "Lead Refresh Cooldown", desc: "Active list used by Lead Refresh workflows. Contains contacts where 'lead_refresh_active = Yes'. Smart Views filter these contacts OUT so setters don't repeatedly redial the same lead within the cooldown window." },
-  { type: "active", id: "2379", name: "Upcoming Appointments (>48 Hours)", desc: "Show Rate Engine list. All appointments more than 48 hours away. Contacts exit this list when within 48 hours. Triggers Confirmation List workflow." },
-  { type: "active", id: "2381", name: "Upcoming Unconfirmed (24–48 Hours)", desc: "Show Rate Engine list. Appointment is 24–48 hours away and not yet confirmed. Triggers 'Stronger Nudge' pre-call email + optional SMS." },
-  { type: "active", id: "2380", name: "Upcoming Unconfirmed (<24 Hours)", desc: "Show Rate Engine list. Appointment is under 24 hours away and not yet confirmed. Highest urgency — triggers urgent SMS track." },
-  { type: "active", id: "2382", name: "Upcoming Confirmed Appointments", desc: "Show Rate Engine list. Lead has confirmed their appointment. Triggers 'Thanks for confirming' email and prep/logistics sequence." },
-  { type: "active", id: "2392", name: "Never Confirmed Appointments", desc: "Show Rate Engine list. Appointment time passed with no confirmation recorded. Feeds Never Confirmed stage in Confirmation Pipeline." },
-  { type: "active", name: "P1 — New Hot Leads Smart View", desc: "Dynamic Smart View. Filters: Setter Owner = Me + Lead Status = NEW + Created Today + Lead Refresh Active ≠ Yes + Lead Score (sorted desc). The highest priority dialing queue — these are fresh opt-ins." },
-  { type: "active", name: "P2 — Follow-Ups Smart View", desc: "Contacts with Lead Status = IN_PROGRESS. Meaningful conversation started but no call booked yet. Second-priority dialing queue." },
-  { type: "active", name: "P3 — Active Re-Engagement Smart View", desc: "Older leads with recent activity signals (email opens, site visits). Lead Score ≥ threshold. Third-priority dialing queue." },
-  { type: "active", name: "P4 — Cold Leads Smart View", desc: "Older leads with PROSPECTING or BAD_TIMING status. Lowest priority but still worth dialing on slow days." },
-  { type: "active", name: "Closer Pipeline — Red Zone View", desc: "Saved view showing all deals in 'Red Zone' stage sorted by Expected Close Date. Priority 1 in the Closer's daily workflow after active appointments." },
-  { type: "active", name: "Closer Pipeline — Nurture View", desc: "Saved view of all Nurture deals sorted by 'Next Touch Date'. If Next Touch Date is today or past → reach out immediately. If blank → deal is treated as Lost." },
-  { type: "active", name: "Confirmation View", desc: "Appointment object view filtered to 'Confirmation Owner = Me'. Shows: Appointment name, Lead phone number, Confirmation Stage, Appointment date/time. Rep bookmarks this and works from it daily." },
+  { type: "static", id: "2079", name: "All Opt-ins",                                url: "https://app.hubspot.com/contacts/23635629/objectLists/2079/filters", desc: "Master list of every lead who submitted an opt-in form. Base universe for all lead-level reporting." },
+  { type: "static", id: "2173", name: "VSL Funnel — Opt-ins",                       url: "https://app.hubspot.com/contacts/23635629/objectLists/2173/filters", desc: "Leads who entered through the Video Sales Letter funnel." },
+  { type: "static", id: "2174", name: "Quiz Funnel — Opt-ins",                      url: "https://app.hubspot.com/contacts/23635629/objectLists/2174/filters", desc: "Leads who entered through the Quiz funnel." },
+  { type: "static", id: "2170", name: "PQL — Product Qualified Leads",              url: "https://app.hubspot.com/contacts/23635629/objectLists/2170/filters", desc: "Contacts who have completed a Low-Ticket purchase. Highest-intent lead segment." },
+  { type: "static", id: "2371", name: "Closer Nurture List",                        url: "https://app.hubspot.com/contacts/23635629/objectLists/2371/filters", desc: "Contacts with deals in Closing Qualified/Nurture stage enrolled in the Closer Nurture email workflow." },
+  { type: "active", id: "2212", name: "Lead Refresh Cooldown",                      url: "https://app.hubspot.com/contacts/23635629/objectLists/2212/filters", desc: "Contacts where lead_refresh_active = Yes. Smart Views filter these OUT during cooldown window." },
+  { type: "active", id: "2379", name: "Upcoming Appointments (>48 Hours)",          url: "https://app.hubspot.com/contacts/23635629/objectLists/2379/filters", desc: "Show Rate Engine list. All appointments more than 48 hours away." },
+  { type: "active", id: "2381", name: "Upcoming Unconfirmed (24-48 Hours)",         url: "https://app.hubspot.com/contacts/23635629/objectLists/2381/filters", desc: "Show Rate Engine list. Appointment 24-48 hours away and not yet confirmed." },
+  { type: "active", id: "2380", name: "Upcoming Unconfirmed (<24 Hours)",           url: "https://app.hubspot.com/contacts/23635629/objectLists/2380/filters", desc: "Show Rate Engine list. Appointment under 24 hours away. Highest urgency." },
+  { type: "active", id: "2382", name: "Upcoming Confirmed Appointments",            url: "https://app.hubspot.com/contacts/23635629/objectLists/2382/filters", desc: "Show Rate Engine list. Lead has confirmed their appointment." },
+  { type: "active", id: "2392", name: "Never Confirmed Appointments",               url: "https://app.hubspot.com/contacts/23635629/objectLists/2392/filters", desc: "Show Rate Engine list. Appointment time passed with no confirmation recorded." },
+  { type: "active", id: "2179", name: "Bad Data",                                   url: "https://app.hubspot.com/contacts/23635629/objectLists/2179/filters", desc: "Contacts with invalid phone numbers or bad email data. Removed from dialing queue." },
+  { type: "active", id: "2182", name: "Active - Quiz Leads (Warm - No App)",        url: "https://app.hubspot.com/contacts/23635629/objectLists/2182/filters", desc: "Quiz funnel leads who are warm but have not submitted an application yet." },
+  { type: "active", id: "2181", name: "Active - VSL Leads (Warm - No App)",         url: "https://app.hubspot.com/contacts/23635629/objectLists/2181/filters", desc: "VSL funnel leads who are warm but have not submitted an application yet." },
+  { type: "active", id: "2180", name: "Active - High Intent (App + No Call)",       url: "https://app.hubspot.com/contacts/23635629/objectLists/2180/filters", desc: "Leads who submitted an application but have not been called yet. Priority dial segment." },
+  { type: "active", id: "2319", name: "Setter Engine - Setter Nurture List",        url: "https://app.hubspot.com/contacts/23635629/objectLists/2319/filters", desc: "Contacts tied to deals in Setter Nurture stage. Setter follow-up queue." },
+  { type: "active", name: "P1 — New Hot Leads Smart View",           url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57972208/list", desc: "Contact Object Smart View. Lead Status = NEW + Created Today. Highest priority dialing queue." },
+  { type: "active", name: "P2 — Connected & Needs Follow Up",        url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57972472/list", desc: "Contact Object Smart View. Lead Status = IN_PROGRESS." },
+  { type: "active", name: "P3 — Second Touch for P1",                url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57973166/list", desc: "Contact Object Smart View. Older leads with recent activity signals." },
+  { type: "active", name: "P4 — Warm Leads",                         url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57973180/list", desc: "Contact Object Smart View. PROSPECTING or BAD_TIMING leads." },
+  { type: "active", name: "No-Shows / Cancels Smart View",           url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57973212/list", desc: "Contact Object Smart View. Leads whose appointment was missed or canceled." },
+  { type: "active", name: "Confirmation Specialist View",            url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/58348639/list", desc: "Contact Object Smart View. Daily confirmation queue filtered by Confirmation Owner = Me." },
+  { type: "active", name: "Red Zone List (Deal View)",               url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180191/list", desc: "Deal Object Smart View. All deals in Red Zone stage sorted by Expected Close Date." },
+  { type: "active", name: "Closer Nurture List (Deal View)",         url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180210/list", desc: "Deal Object Smart View. All Nurture deals sorted by Next Touch Date." },
+  { type: "active", name: "My Upcoming Appointments (Deal View)",    url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180217/list", desc: "Deal Object Smart View. Upcoming appointments assigned to you." },
+  { type: "active", name: "My At-Risk Deals (Deal View)",            url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180362/list", desc: "Deal Object Smart View. Deals flagged as at-risk with approaching expected close date." }
 ];
 
 // ============================================================
@@ -1159,18 +917,18 @@ WB.slack = [
       "New Setter Follow Up booked → Booking alert.",
       "New Closer Follow Up booked → Booking alert.",
       "Deal moves to Red Zone → 🚩🚩 NEW RED-ZONE alert with Babe's Name, SP Owner, SDR Owner, Deal Link.",
-      "All booking alerts include phone validation result from ClearoutPhone API.",
+      "All booking alerts include phone validation result from ClearoutPhone API."
     ],
     workflow: "Global — Big Brain — Meetings Tool Sync (action 116) + Sales Big Brain Stage Automation (action 60)",
     emoji: "📅"
   },
   {
     channel: "#Sales-Approval",
-    id: "(via Zapier webhook: hooks.zapier.com/hooks/catch/25588006/ucbu0h2/)",
+    id: "(via Zapier: hooks.zapier.com/hooks/catch/25588006/ucbu0h2/)",
     purpose: "Finance/approval team notification when a deal reaches Pending Approval stage. Fires via Zapier webhook.",
     fires: [
       "Deal moves to Pending Approval → Webhook fires to Zapier → Zapier posts deal info to #Sales-Approval: deal stage, deal owner, deal name, deal link.",
-      "Triggered by Stage Automation workflow (action 105) OR Pending Deals Notification workflow (currently disabled — avoid duplicate).",
+      "Triggered by Stage Automation workflow (action 105) OR Pending Deals Notification workflow (currently disabled — avoid duplicate)."
     ],
     workflow: "Sales — Big Brain — Stage Automation (action 105) + Pending Deals Notification workflow (1778074463, disabled)",
     emoji: "✅"
@@ -1182,17 +940,17 @@ WB.slack = [
     fires: [
       "New opt-in submitted via form → Lead name, email, funnel source, opt-in timestamp.",
       "Lead re-delegated → New owner notified with lead name and re-delegation reason.",
-      "Appointments Delegation round-robin fires → New assignment ping.",
+      "Appointments Delegation round-robin fires → New assignment ping."
     ],
     workflow: "Entry Point Mapping (action 6), Appointments Delegation (action 4)",
     emoji: "🔔"
   },
   {
     channel: "Closed Won Notification",
-    id: "(via Zapier webhook: hooks.zapier.com/hooks/catch/18051734/uwi4s3k/)",
-    purpose: "Fires when a deal closes won and the associated Setter call was originally 'Scheduled' (tracking setter-to-close attribution).",
+    id: "(via Zapier: hooks.zapier.com/hooks/catch/18051734/uwi4s3k/)",
+    purpose: "Fires when a deal closes won and the associated Setter call was originally 'Scheduled' — tracking setter-to-close attribution.",
     fires: [
-      "Deal moves to Closed Won AND associated contact's discovery_call_outcome was = Scheduled → Webhook fires to Zapier for win attribution tracking.",
+      "Deal moves to Closed Won AND associated contact's discovery_call_outcome was = Scheduled → Webhook fires to Zapier for win attribution tracking."
     ],
     workflow: "Sales — Big Brain — Stage Automation (action 95)",
     emoji: "🏆"
@@ -1202,7 +960,7 @@ WB.slack = [
     id: "U0A0YC606UE",
     purpose: "Emergency fallback. Only fires if the Calendly Error Handler completely fails to find a URI after exhausting all recovery attempts.",
     fires: [
-      "Calendly URI cannot be retrieved from Zapier or directly from Calendly API → DM to U0A0YC606UE with contact name, email, and error details for manual resolution.",
+      "Calendly URI cannot be retrieved from Zapier or directly from Calendly API → DM to U0A0YC606UE with contact name, email, and error details for manual resolution."
     ],
     workflow: "Calendly Booking Error Handler (final action)",
     emoji: "🚨"
@@ -1214,11 +972,8 @@ WB.slack = [
 // ============================================================
 WB.integrations = [
   {
-    name: "Zapier",
-    icon: "⚡",
-    status: "Active",
-    statusColor: "green",
-    description: "Catches the Calendly webhook when a new booking is created (invitee.created event). Searches for the matching HubSpot contact by email, then writes two URI properties back to the Contact record. These URIs are what allows the Big Brain and Calendly Integration workflows to know what was booked.",
+    name: "Zapier", icon: "⚡", status: "Active", statusColor: "green",
+    description: "Catches the Calendly webhook when a new booking is created (invitee.created event). Searches for the matching HubSpot contact by email, then writes two URI properties back to the Contact record.",
     details: [
       "Trigger: Calendly webhook — invitee.created",
       "Action 1: 1-minute delay (allows Calendly data to settle)",
@@ -1227,165 +982,150 @@ WB.integrations = [
       "Action 4: Update contact — writes calendly_event_type_uri",
       "Auth ID: a8e87fa0d265...ef8511",
       "Note: Currently paused — Error Handler workflow compensates",
-      "Second Zap (ucbu0h2): Receives Pending Approval webhook → posts to #Sales-Approval Slack channel",
-      "Third Zap (uwi4s3k): Receives Closed Won attribution webhook → tracks setter-to-close conversion",
+      "Second Zap (ucbu0h2): Receives Pending Approval webhook → posts to #Sales-Approval",
+      "Third Zap (uwi4s3k): Receives Closed Won attribution webhook → tracks setter-to-close conversion"
     ]
   },
   {
-    name: "Calendly",
-    icon: "📆",
-    status: "Active",
-    statusColor: "green",
-    description: "The scheduling layer. All meetings are booked via Calendly links. The Big Brain workflow reads Calendly data to determine meeting type, rep assignment, and datetime. The Calendly Integration workflow fetches event type internal_notes for meeting type parsing. The Error Handler calls the Calendly API directly as a fallback.",
+    name: "Calendly", icon: "📆", status: "Active", statusColor: "green",
+    description: "The scheduling layer. All meetings are booked via Calendly links. The Big Brain workflow reads Calendly data to determine meeting type, rep assignment, and datetime.",
     details: [
       "Org ID: EDFFFZ67N5KHDG76",
       "Secret: Calendly_Token (stored in HubSpot Secrets)",
       "4 active scheduling link types: Setter Call, Closer Call, Setter Follow Up, Closer Follow Up",
       "Each link maps to a specific Sales Momentum Pipeline stage and Appointment record type",
-      "internal_note field on Event Types stores: 'Meeting Type - Booking Method - notes'",
-      "Invitee form question 'Your HubSpot ID' captures which rep set the booking",
+      "internal_note field stores: 'Meeting Type - Booking Method - notes'",
+      "Invitee form question 'Your HubSpot ID' captures which rep set the booking"
     ]
   },
   {
-    name: "n8n",
-    icon: "🔄",
-    status: "Active",
-    statusColor: "green",
-    description: "Internal automation platform. Receives webhook payloads from HubSpot workflows and handles downstream actions including Google Calendar event deletion (when deals are moved to 'Canceled'), Zoom link management, and ad attribution confirmation.",
+    name: "n8n", icon: "🔄", status: "Active", statusColor: "green",
+    description: "Internal automation platform. Receives webhook payloads from HubSpot workflows and handles downstream actions including Google Calendar event deletion, Zoom link management, and ad attribution.",
     details: [
       "Webhook endpoint: https://n8n.warriorbabe.com/webhook/setter-ads-confirmation",
       "Called by: Global Big Brain workflow (action 116)",
       "Handles: Ad attribution, Google Calendar event deletion on cancel, Zoom link deactivation",
-      "CRITICAL: Deleting from Google Calendar directly bypasses n8n and BREAKS automation — always use HubSpot Deal Stage instead",
+      "CRITICAL: Deleting from Google Calendar directly bypasses n8n and BREAKS automation"
     ]
   },
   {
-    name: "Aloware",
-    icon: "📞",
-    status: "Active",
-    statusColor: "green",
+    name: "Aloware", icon: "📞", status: "Active", statusColor: "green",
     description: "Dialer and SMS platform used by setters. All outbound calls and SMS are logged through Aloware, which syncs call dispositions to HubSpot. This data feeds the Universal Call Tracker workflow.",
     details: [
       "Syncs outbound call logs to HubSpot Contact activity",
       "Each logged call increments 'sm__number_of_outbound_calls'",
       "Updates 'sm__last_outbound_call_date' on each dial",
       "Disposition types: Connected, No Answer, Voicemail, Busy, Wrong Number",
-      "All dispositions trigger the Universal Call Tracker workflow",
+      "All dispositions trigger the Universal Call Tracker workflow"
     ]
   },
   {
-    name: "ClearoutPhone",
-    icon: "✅",
-    status: "Active",
-    statusColor: "green",
+    name: "ClearoutPhone", icon: "✅", status: "Active", statusColor: "green",
     description: "Phone validation API called inside the Big Brain workflow for every new booking. Validates the lead's phone number and returns line type, validity status, and a risk score.",
     details: [
       "Called by: Global Big Brain workflow (action 103)",
       "Secret stored as: clearoutphone",
       "Returns: Line Type (Mobile/Landline/VoIP), Validity (Valid/Invalid), Risk Score",
-      "Results included in Slack booking alert so confirmation reps know if number is worth calling",
+      "Results included in Slack booking alert so confirmation reps know if number is worth calling"
     ]
   },
   {
-    name: "HubSpot Private Apps",
-    icon: "🔑",
-    status: "Active",
-    statusColor: "green",
-    description: "Two custom private apps extend HubSpot's capabilities beyond native features.",
+    name: "HubSpot Private Apps", icon: "🔑", status: "Active", statusColor: "green",
+    description: "Two custom private apps extend HubSpot capabilities beyond native features.",
     details: [
-      "fluffy-time-zone (Fluffy_Timezone): Primary advanced app. Used in Big Brain, Calendly Integration, and Stage Automation custom code nodes. Scopes: CRM meetings read/write, associations read, contacts read/write, owners read.",
-      "responsive_pillow: Delegation and availability app. Used for round-robin assignment logic in the Appointments Delegation workflow.",
+      "fluffy-time-zone (Fluffy_Timezone): Primary advanced app. Scopes: CRM meetings read/write, associations read, contacts read/write, owners read.",
+      "responsive_pillow: Delegation and availability app. Used for round-robin assignment in the Appointments Delegation workflow.",
       "Secrets stored in HubSpot: Fluffy_Timezone, access_token, clearoutphone, Calendly_Token",
-      "Both apps are HubSpot Private Apps (not public marketplace apps).",
+      "Both apps are HubSpot Private Apps (not public marketplace apps)."
     ]
-  },
-];// ============================================================
-// HUBSPOT LINKS — appended to WB namespace
+  }
+];
+
 // ============================================================
+// PIPELINES
+// ============================================================
+WB.pipelines = {
+  deal: {
+    id: "840860960",
+    name: "Sales Momentum Pipeline",
+    object: "Deal",
+    description: "The primary deal pipeline tracking every prospect from first setter call through to closed won. 13 stages covering the full sales journey. Stages marked AUTO should never be moved manually — they are set exclusively by scheduling links and workflow automations.",
+    stages: [
+      {
+        group: "Setter Funnel — Auto Stages (Scheduling Links ONLY)",
+        groupNote: "⚠️ Do NOT move these stages manually. Set exclusively by scheduling links.",
+        stages: [
+          { name: "Setter Call Booked", probability: "10%", type: "auto", moveRule: "DO NOT move manually.", conditional: "No conditional properties.", conditionalOptions: [], desc: "A Setter/Implementation call has been scheduled. The Big Brain workflow created the Appointment record and moved the deal here automatically.", triggers: "Big Brain fires. Appointment object created. Zoom link written to Contact. Slack notification to #confirmation-channel." },
+          { name: "Setter Follow Up Call Booked", probability: "20%", type: "auto", moveRule: "DO NOT move manually.", conditional: "No conditional properties.", conditionalOptions: [], desc: "A follow-up Setter Call has been scheduled. Used when the lead needs more time before a Closer call.", triggers: "Big Brain fires on Setter Follow Up booking. New Appointment record created." }
+        ]
+      },
+      {
+        group: "Setter Funnel — Manual Outcome Stages",
+        groupNote: "These stages are moved manually by Setters after an outcome occurs.",
+        stages: [
+          { name: "Setter No Show / Canceled", probability: "10%", type: "manual", moveRule: "Setter moves deal here after a missed or canceled Implementation call.", conditional: "REQUIRED — Must select one before moving:", conditionalOptions: ["Canceled by Us", "Canceled by Prospect", "No Show"], desc: "The Setter Call was missed or canceled. The rep must document the reason.", triggers: "Stage Automation sets Contact Lead Status = NO_SHOW/CANCEL. No Show: stamps disco_call_no_show_date." },
+          { name: "Setter Qualified / Nurture", probability: "20%", type: "manual", moveRule: "Setter moves here when the lead was qualified but not immediately booked.", conditional: "REQUIRED — Must choose nurture type AND fill date:", conditionalOptions: ["Setter Nurture → fill: Setter - Next Touch Date (Nurture)", "Closer Nurture → fill: Closer - Next Touch Date (Nurture)"], desc: "Qualified lead who needs follow-up before booking a Closer. A concrete Next Touch Date is mandatory.", triggers: "Stage Automation sets discovery_call_outcome = Completed. Contact Lifecycle → salesqualifiedlead. Contact Lead Status → IN_PROGRESS." },
+          { name: "DQ", probability: "0% (Lost)", type: "lost", moveRule: "Setter or Closer moves here when a lead is disqualified.", conditional: "REQUIRED — Must fill ONE:", conditionalOptions: ["Setter DQ Reason: Financially Unqualified", "Setter DQ Reason: Not a fit", "Setter DQ Reason: Decision Maker Not Present", "Setter DQ Reason: Other", "Closing Call DQ Reason: free-text explanation"], desc: "Lead is disqualified and removed from the active pipeline.", triggers: "Stage Automation routes based on which DQ field is filled. Contact Lead Status = UNQUALIFIED." }
+        ]
+      },
+      {
+        group: "Closer Funnel — Auto Stages (Scheduling Links ONLY)",
+        groupNote: "⚠️ Do NOT move these stages manually. Set exclusively by scheduling links.",
+        stages: [
+          { name: "Closing Call Booked", probability: "30%", type: "auto", moveRule: "DO NOT move manually.", conditional: "No conditional properties.", conditionalOptions: [], desc: "A Closer/Strategy Session has been scheduled. Big Brain moved the deal here when the Setter booked via Calendly.", triggers: "Big Brain fires. Appointment created. Closer assigned. Slack to #confirmation-channel. Stage Automation copies last_closing_call_datetime." },
+          { name: "Closing Follow Up Call Booked", probability: "40%", type: "auto", moveRule: "DO NOT move manually.", conditional: "No conditional properties.", conditionalOptions: [], desc: "A follow-up Closer Call has been scheduled for a Red Zone or Nurture deal.", triggers: "Big Brain fires on Closer Follow Up booking. New Appointment record created." }
+        ]
+      },
+      {
+        group: "Closer Funnel — Manual Outcome Stages",
+        groupNote: "These stages are moved manually by Closers after an outcome occurs.",
+        stages: [
+          { name: "Closing Call No Show / Canceled", probability: "10%", type: "manual", moveRule: "Closer moves deal here after a missed or canceled Strategy Session.", conditional: "REQUIRED — Must select one:", conditionalOptions: ["Canceled by Us", "Canceled by Prospect", "No Show"], desc: "The Closer Call was missed or canceled. Reason must be documented.", triggers: "Stage Automation sets Contact Lead Status = NO_SHOW/CANCEL. No Show: stamps closing_call_no_show_date." },
+          { name: "Closing Qualified / Nurture", probability: "40%", type: "manual", moveRule: "Closer moves here when a lead is qualified but needs follow-up before closing.", conditional: "REQUIRED — Must choose nurture type AND fill date:", conditionalOptions: ["Setter Nurture → fill: Setter - Next Touch Date", "Closer Nurture → fill: Closer - Next Touch Date"], desc: "Qualified lead who needs more time after a Closer Call. Must set a concrete Next Touch Date.", triggers: "Stage Automation sets closer_call_outcome = Canceled by Team. Contact Lead Status = OPEN_DEAL. Stamps offer_made_date." },
+          { name: "Red Zone", probability: "80%", type: "manual", moveRule: "Closer moves here when a deal is closing within 1-14 days.", conditional: "REQUIRED — Must fill ALL 3 before moving:", conditionalOptions: ["Deal Type: New Business | Existing Business | Front End Offer | Back End Offer | Other", "Red Zone Type: Submitted Deposit | Verbally Committed | Follow Up Scheduled", "Expected Close Date: (specific date required)"], desc: "Deal is on the 1-yard line. All three conditional fields are mandatory gatekeepers.", triggers: "Stage Automation: Posts 🚩🚩 NEW RED-ZONE Slack to C0ADDPT64BE. Contact Lead Status = RED_ZONE. Stamps offer_made_date." }
+        ]
+      },
+      {
+        group: "Final Approval & Terminal Stages",
+        groupNote: "These stages represent the end states of a deal.",
+        stages: [
+          { name: "Pending Approval", probability: "90%", type: "manual", moveRule: "Closer moves here when a deal is verbally committed and payment is being finalized.", conditional: "REQUIRED — Must fill ALL 5 fields:", conditionalOptions: ["Amount: (dollar amount required)", "Was Financing Used? Yes, Affirm | Yes, Klarna | Yes, SplitIt | No", "What type of lead is this? One Call Close | Follow Up / Pipeline | Outbound Self Set", "Payment Plan: PIF | Affirm PIF | 3 Pay | VIP Foundations - 90 Day | 3 Month x4 | 6 Month x2 | 12 Month | Special Arrangement", "Payment Special Arrangement Description: (only if Special Arrangement selected)"], desc: "Deal is in final approval. All payment details must be documented.", triggers: "Stage Automation fires Zapier webhook → Slack #Sales-Approval notification. Closing Conditions Met (Agreement Signed + Payment Made) must both be ticked before moving to Closed Won." },
+          { name: "Closed Won", probability: "100% (Won)", type: "won", moveRule: "Move here ONLY after Agreement Signed AND Payment Made are both checked.", conditional: "REQUIRED — Both Closing Conditions Met must be checked:", conditionalOptions: ["Deal Type: (required)", "Amount: (required)", "Closing Conditions: Agreement Signed ✓", "Closing Conditions: Payment Made ✓"], desc: "Deal is paid and signed. Client is onboarded. Feeds all revenue attribution and commission tracking.", triggers: "Stage Automation: Contact Lifecycle = customer. Contact Lead Status = CLOSED_WON. Stamps closedate = now. Fires Zapier webhook for win notification." },
+          { name: "Closed Lost", probability: "0% (Lost)", type: "lost", moveRule: "Move here when a deal is permanently closed without purchase.", conditional: "REQUIRED — Deal Type and Amount must be filled.", conditionalOptions: ["Deal Type: (required)", "Amount: (required)"], desc: "Deal is permanently closed without a purchase. Enters loss reason reporting.", triggers: "Stage Automation: Contact Lead Status = CLOSED_LOST. Stamps offer_made_date. Association label changed." }
+        ]
+      }
+    ]
+  },
 
-// Workflow IDs already exist on each workflow object.
-// The link is: https://app.hubspot.com/workflows/23635629/platform/flow/{id}
-WB.hubspotPortalId = "23635629";
-
-WB.getWorkflowUrl = function(id) {
-  return `https://app.hubspot.com/workflows/${WB.hubspotPortalId}/platform/flow/${id}`;
+  appointment: {
+    id: "850614794",
+    name: "Confirmation Pipeline",
+    object: "Appointment",
+    description: "All appointment records flow through this pipeline automatically. Reps should NEVER manually drag appointment cards between stages. Instead, reps update two key properties: (1) Closing Call Confirmation List to update confirmation status, and (2) Final Outcome of Appointment after the call occurs.",
+    stages: [
+      {
+        group: "Active Appointment Stages",
+        groupNote: "All stages managed automatically. Do not move manually.",
+        stages: [
+          { name: "Upcoming Appointments", type: "auto", desc: "Default stage for all newly created appointment records. Every booking lands here first.", conditional: "No action required.", conditionalOptions: [], triggers: "Auto-set by Global Big Brain workflow when Appointment is created.", moveRule: "Do not move manually.", status: "Open" },
+          { name: "Scheduled (<48 Hours Out)", type: "auto", desc: "Appointment is 24-48 hours away. Contacts in List 2381 trigger this stage.", conditional: "Auto-set when confirmation list = Unconfirmed - <48 Hours.", conditionalOptions: [], triggers: "Triggered by list membership in List 2381.", moveRule: "Do not move manually.", status: "Open" },
+          { name: "Scheduled (<24 Hours Out)", type: "auto", desc: "Appointment is under 24 hours away and still unconfirmed. Highest urgency.", conditional: "Auto-set when confirmation list = Unconfirmed - <24 Hours (List 2380).", conditionalOptions: [], triggers: "Triggered by List 2380. Pipeline stage ID: 1268114333.", moveRule: "Do not move manually.", status: "Open" },
+          { name: "Confirmed", type: "auto", desc: "Lead verbally confirmed. Rep updates the Closing Call Confirmation List property to trigger this.", conditional: "Rep updates confirmation list → 'Upcoming Confirmed Appointments'.", conditionalOptions: ["Confirmation Disposition workflow moves stage (ID: 1269136023)"], triggers: "Auto-moved when Confirmation List = Upcoming Confirmed Appointments. Stamps datetime_confirmed.", moveRule: "Do not drag manually. Update the Confirmation Stage property instead.", status: "Closed", id: "1269136023" },
+          { name: "Never Confirmed", type: "auto", desc: "Appointment time passed with no confirmation. System auto-moves here.", conditional: "Auto-moved: appointment time passed AND confirmation status still blank.", conditionalOptions: [], triggers: "Auto-moved when confirmation list = Never Confirmed (List 2392). Pipeline stage ID: 1269136024.", moveRule: "Do not move manually.", status: "Closed", id: "1269136024" },
+          { name: "In Progress", type: "auto", desc: "The appointment is actively happening. Set 5 minutes before start time.", conditional: "System auto-sets this 5 minutes before the scheduled start time.", conditionalOptions: [], triggers: "Auto-set by Appointment — In Progress? workflow (1770760586).", moveRule: "Do not move manually.", status: "Open", id: "1268114331" }
+        ]
+      },
+      {
+        group: "Past Appointment Stages",
+        groupNote: "Records move here when rep sets the Final Outcome of Appointment property.",
+        stages: [
+          { name: "Past (Completed)", type: "auto", desc: "Appointment happened and was completed.", conditional: "Rep sets Final Outcome of Appointment = Completed.", conditionalOptions: ["Set property: Final Outcome of Appointment → Completed"], triggers: "Auto-moved by Final Appointment Disposition workflow (1755975999). Association label swaps to Past Disco or Past Closer.", moveRule: "Do not drag manually. Set the Final Outcome of Appointment property.", status: "Closed" },
+          { name: "Past (No Show / Canceled)", type: "auto", desc: "Appointment resulted in a No Show or Cancellation.", conditional: "Rep sets Final Outcome = No Show, Canceled by Us, or Canceled by Them.", conditionalOptions: ["Set property: Final Outcome → No Show", "Set property: Final Outcome → Canceled by Us", "Set property: Final Outcome → Canceled by Them"], triggers: "Auto-moved by Final Appointment Disposition workflow. Association label swaps. Removed from active queue.", moveRule: "Do not drag manually.", status: "Closed" },
+          { name: "Rescheduled", type: "auto", desc: "Appointment was rescheduled. Final Disposition workflow sets this stage.", conditional: "Auto-set by Final Disposition workflow when outcome = Rescheduled.", conditionalOptions: [], triggers: "Auto-moved by Final Appointment Disposition workflow (stage ID: 1278790583).", moveRule: "Do not move manually.", status: "Open", id: "1278790583" },
+          { name: "Canceled by Us", type: "auto", desc: "Appointment was canceled by the team/rep during the confirmation process.", conditional: "Set by Cancellation Disposition workflow when Canceled by Us path fires. Stage ID: 1268114334.", conditionalOptions: [], triggers: "Cancellation Disposition workflow (1755406259). Deal moved to No Show/Cancel stage.", moveRule: "Do not move manually.", status: "Closed", id: "1268114334" },
+          { name: "Canceled by Them", type: "auto", desc: "Appointment was canceled by the prospect during the confirmation process.", conditional: "Set by Cancellation Disposition workflow when Canceled by Prospect path fires. Stage ID: 1268114335.", conditionalOptions: [], triggers: "Cancellation Disposition workflow (1755406259). Deal moved to No Show/Cancel stage.", moveRule: "Do not move manually.", status: "Closed", id: "1268114335" }
+        ]
+      }
+    ]
+  }
 };
-
-// ── SMART VIEWS (Contact Object) ──
-WB.smartViews = [
-  {
-    category: "contact",
-    categoryLabel: "Contact Object — Smart Views",
-    items: [
-      { name: "P1: New Hot Leads",                 url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57972208/list",  desc: "Fresh opt-ins from today. Lead Status = NEW. Highest priority dialing queue." },
-      { name: "P2: Connected & Needs Follow Up",   url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57972472/list",  desc: "Meaningful conversation started but no call booked. Lead Status = IN_PROGRESS." },
-      { name: "P3: Second Touch for P1",           url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57973166/list",  desc: "Older leads showing recent activity signals. Third-priority dialing queue." },
-      { name: "P4: Warm Leads",                    url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57973180/list",  desc: "Older leads with PROSPECTING or BAD_TIMING status. Lowest setter priority." },
-      { name: "No-Shows / Cancels",                url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/57973212/list",  desc: "Leads whose appointment was missed or canceled. Reactivation queue." },
-      { name: "Confirmation Specialist View",      url: "https://app.hubspot.com/contacts/23635629/objects/0-1/views/58348639/list",  desc: "Daily confirmation queue for Confirmation Specialists. Filtered by Confirmation Owner = Me." },
-    ]
-  },
-  {
-    category: "deal",
-    categoryLabel: "Deal Object — Smart Views",
-    items: [
-      { name: "Red Zone List",              url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180191/list",  desc: "All deals in Red Zone stage, sorted by Expected Close Date. Priority 1 for Closers." },
-      { name: "Closer Nurture List",        url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180210/list",  desc: "All Nurture deals sorted by Next Touch Date. Blank date = treat as Lost." },
-      { name: "My Upcoming Appointments",   url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180217/list",  desc: "Deal-level view of upcoming appointments assigned to you." },
-      { name: "My At-Risk Deals",           url: "https://app.hubspot.com/contacts/23635629/objects/0-3/views/58180362/list",  desc: "Deals flagged as at-risk — expected close date approaching with no movement." },
-    ]
-  }
-];
-
-// ── DASHBOARDS ──
-WB.dashboards = [
-  { name: "Show Rate Engine Dashboard — General", url: "https://app.hubspot.com/reports-dashboard/23635629/view/18694861",  desc: "Overall show rate, confirmation rates, and appointment outcomes across all call types." },
-  { name: "Setter Engine Dashboard",              url: "https://app.hubspot.com/reports-dashboard/23635629/view/18588940",  desc: "Speed to Lead, dial volume, lead status distribution, and setter KPIs." },
-  { name: "Closer Engine Dashboard — Main",       url: "https://app.hubspot.com/reports-dashboard/23635629/view/18647844",  desc: "Deal pipeline health, close rates, Red Zone forecasting, and Closer performance." },
-  { name: "Speed To Lead Tracking",               url: "https://app.hubspot.com/reports-dashboard/23635629/view/18566973",  desc: "Detailed STL breakdown by bucket, rep, and time period." },
-];
-
-// ── LEAD SCORING ──
-WB.leadScoring = [
-  { name: "Setter Engine Lead Score", url: "https://app.hubspot.com/lead-scoring/23635629/details/514456305435", desc: "Composite lead score driving P1–P4 Smart View priority sorting. Higher score = dial first." },
-];
-
-// ── SEGMENTS / LISTS ──
-WB.segments = [
-  {
-    group: "Show Rate / Appointment Lists",
-    items: [
-      { name: "Sales - Upcoming Appts",                    id: "2379", url: "https://app.hubspot.com/contacts/23635629/objectLists/2379/filters",  desc: "All contacts with an upcoming appointment (>48 hrs). Base list for confirmation flow." },
-      { name: "Sales - Upcoming Unconfirmed Appts - 48h",  id: "2381", url: "https://app.hubspot.com/contacts/23635629/objectLists/2381/filters",  desc: "Appointment 24–48 hours out, not yet confirmed. Triggers stronger nudge messaging." },
-      { name: "Sales - Upcoming Confirmed Appts",          id: "2382", url: "https://app.hubspot.com/contacts/23635629/objectLists/2382/filters",  desc: "Contacts who confirmed their appointment. Triggers thanks + prep sequence." },
-      { name: "Sales - Upcoming Unconfirmed Appts - 24h",  id: "2380", url: "https://app.hubspot.com/contacts/23635629/objectLists/2380/filters",  desc: "Appointment under 24 hours, not confirmed. Highest urgency confirmation outreach." },
-      { name: "Show Rate Engine - Never Confirmed",        id: "2392", url: "https://app.hubspot.com/contacts/23635629/objectLists/2392/filters",  desc: "Appointment time passed with no confirmation recorded. Feeds Never Confirmed pipeline stage." },
-    ]
-  },
-  {
-    group: "Setter Engine Lists",
-    items: [
-      { name: "Setter Engine - Leads to Be Set",                         id: "2212", url: "https://app.hubspot.com/contacts/23635629/objectLists/2212/filters",  desc: "Active list of leads currently in the Lead Refresh cooldown (lead_refresh_active = Yes)." },
-      { name: "Bad Data",                                                 id: "2179", url: "https://app.hubspot.com/contacts/23635629/objectLists/2179/filters",  desc: "Contacts with invalid phone numbers or bad email data. Removed from dialing queue." },
-      { name: "Active - Quiz Leads (Warm - No App)",                     id: "2182", url: "https://app.hubspot.com/contacts/23635629/objectLists/2182/filters",  desc: "Quiz funnel leads who are warm but have not submitted an application yet." },
-      { name: "Active - VSL Leads (Warm - No App)",                      id: "2181", url: "https://app.hubspot.com/contacts/23635629/objectLists/2181/filters",  desc: "VSL funnel leads who are warm but have not submitted an application yet." },
-      { name: "Active - High Intent (App + No Call)",                    id: "2180", url: "https://app.hubspot.com/contacts/23635629/objectLists/2180/filters",  desc: "Leads who submitted an application but have not been called yet. Priority dial segment." },
-      { name: "Setter Engine - Setter Nurture List from Deal Pipeline",   id: "2319", url: "https://app.hubspot.com/contacts/23635629/objectLists/2319/filters",  desc: "Contacts tied to deals in Setter Nurture stage. Setter follow-up queue." },
-    ]
-  },
-  {
-    group: "Closer Engine Lists",
-    items: [
-      { name: "Closer Engine - Contacts with Deal in Nurture Stage", id: "2371", url: "https://app.hubspot.com/contacts/23635629/objectLists/2371/filters",  desc: "Contacts whose deal is in Closing Qualified/Nurture stage. Enrolled in Closer Nurture email workflow." },
-    ]
-  },
-  {
-    group: "Master Static Lists",
-    items: [
-      { name: "Master Static - Quiz",               id: "2174", url: "https://app.hubspot.com/contacts/23635629/objectLists/2174/filters",  desc: "All-time master list of Quiz funnel opt-ins." },
-      { name: "Master Static - VSL",                id: "2173", url: "https://app.hubspot.com/contacts/23635629/objectLists/2173/filters",  desc: "All-time master list of VSL funnel opt-ins." },
-      { name: "Master Static - Low Ticket (PQL)",   id: "2170", url: "https://app.hubspot.com/contacts/23635629/objectLists/2170/filters",  desc: "All-time list of Low-Ticket purchasers. Product Qualified Leads — highest intent segment." },
-      { name: "ALL LEADS | Master Static List",     id: "2079", url: "https://app.hubspot.com/contacts/23635629/objectLists/2079/filters",  desc: "The full universe — every lead who has ever opted in across all funnels." },
-    ]
-  }
-];
